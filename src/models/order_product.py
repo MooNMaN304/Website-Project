@@ -1,17 +1,20 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
-from sqlalchemy.orm import relationship
-
+from sqlalchemy import Column, Integer, ForeignKey
 from .base import AbstractBase
 
-
 class OrderProductModel(AbstractBase):
-    __tablename__ = 'order_product'
-    order_id = Column(Integer, ForeignKey('order.id'), nullable=False)
+    __tablename__ = 'order_products'
+    order_id = Column(Integer, ForeignKey('orders.id'), nullable=False)
     product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
+    quantity = Column(Integer, default=1)  # Добавим количество товаров
 
+    def __repr__(self):
+        return (
+            f"OrderProductModel(id={self.id}, "
+            f"order_id={self.order_id}, "
+            f"product_id={self.product_id}, "
+            f"quantity={self.quantity})"
+        )
 
     def __str__(self):
-        return self.order_id, self.product_id
-    
-    def __repr__(self):
-        return f"OrderProductModel('{self.order_id}', '{self.product_id})"
+        return f"Товар {self.product_id} ({self.quantity})"
+

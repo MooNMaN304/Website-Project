@@ -8,12 +8,13 @@ from .base import AbstractBase
 
 class UserModel(AbstractBase):
     __tablename__ = 'users'
-    name = Column(String, unique=True, nullable=False)
-    email = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    cart_rel = relationship('CartModel', backref='user')
 
     def __str__(self):
-        return self.name, self.id, self.email
+        return str(self.id, self.name, self.email)
     
     def __repr__(self):
         return f"UserModel('{self.name}', '{self.id}', '{self.email}', '{self.password}')"
