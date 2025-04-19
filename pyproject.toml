@@ -1,0 +1,22 @@
+[project]
+name = "website-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "alembic",
+    "bcrypt>=4.2.1",
+    "faker>=36.1.1",
+    "fastapi[standard]>=0.115.8",
+    "passlib>=1.7.4",
+    "psycopg2>=2.9.10",
+    "pydantic-settings>=2.7.1",
+    "pyjwt>=2.10.1",
+    "sqlalchemy",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
