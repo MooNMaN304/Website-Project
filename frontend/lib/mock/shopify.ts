@@ -6,6 +6,100 @@ import { TAGS } from '../constants';
  * to allow the application to run without connecting to the Shopify API.
  */
 
+function transformProduct(product, index = 1) {
+  return {
+    id: `product-${index}`,
+    handle: product.product_name.toLowerCase().replace(/\s+/g, '-'),
+    availableForSale: true,
+    title: product.product_name,
+    description: product.product_description,
+    descriptionHtml: `<p>${product.product_description}</p>`,
+    options: [
+      {
+        id: 'option-1',
+        name: 'Size',
+        values: ['S', 'M', 'L', 'XL']
+      },
+      {
+        id: 'option-2',
+        name: 'Color',
+        values: ['Black', 'White', 'Blue']
+      }
+    ],
+    priceRange: {
+      maxVariantPrice: {
+        amount: product.product_price.toFixed(2),
+        currencyCode: 'USD'
+      },
+      minVariantPrice: {
+        amount: product.product_price.toFixed(2),
+        currencyCode: 'USD'
+      }
+    },
+    variants: {
+      edges: [
+        {
+          node: {
+            id: `variant-${index}`,
+            availableForSale: true,
+            selectedOptions: [
+              {
+                name: 'Size',
+                value: product.product_size.toUpperCase()
+              },
+              {
+                name: 'Color',
+                value: capitalize(product.product_color)
+              }
+            ],
+            price: {
+              amount: product.product_price.toFixed(2),
+              currencyCode: 'USD'
+            }
+          }
+        }
+      ]
+    },
+    featuredImage: {
+      url: 'https://picsum.photos/seed/picsum/800/800',
+      altText: product.product_name,
+      width: 800,
+      height: 800
+    },
+    images: {
+      edges: [
+        {
+          node: {
+            url: 'https://picsum.photos/seed/picsum/800/800',
+            altText: `${product.product_name} Front`,
+            width: 800,
+            height: 800
+          }
+        },
+        {
+          node: {
+            url: 'https://picsum.photos/seed/product1/800/800',
+            altText: `${product.product_name} Back`,
+            width: 800,
+            height: 800
+          }
+        }
+      ]
+    },
+    seo: {
+      title: product.product_name,
+      description: product.product_description
+    },
+    tags: ['t-shirt', 'clothing', 'fashion'],
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+
 export async function getProducts({ query, reverse, sortKey }: { 
   query?: string;
   reverse?: boolean;
@@ -97,17 +191,37 @@ export async function getCollectionProducts({
 }) {
   // If collection handle is provided, filter products that belong to that collection
   // For simplicity, we'll just return all products for any valid collection
-  if (collection && mockCollections.some(c => c.handle === collection)) {
-    // Simulate products that belong to the specific collection
-    return mockProducts.filter((_, index) => {
-      if (collection === 'clothing') return index < 2; // First 2 products are clothing
-      if (collection === 'accessories') return index >= 2; // Last product is accessory
-      return true; // Return all for other collections
-    });
-  }
   
-  // Return all products for default collection
-  return mockProducts;
+  try {
+    const res = await fetch(`${process.env.FASTAPI_BASE_URL}/api/products/?page=1`);
+
+    if (!res.ok) {
+      throw new Error(`FastAPI fetch failed: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    console.log(data)
+    const transformedProducts = data.products.map((product, i) =>
+      transformProduct(product, i + 1)
+    );
+    console.log(transformedProducts);
+    return transformedProducts;
+  } catch (error) {
+    console.error('Error fetching from FastAPI:', error);
+  }
+
+
+  // if (collection && mockCollections.some(c => c.handle === collection)) {
+  //   // Simulate products that belong to the specific collection
+  //   return mockProducts.filter((_, index) => {
+  //     if (collection === 'clothing') return index < 2; // First 2 products are clothing
+  //     if (collection === 'accessories') return index >= 2; // Last product is accessory
+  //     return true; // Return all for other collections
+  //   });
+  // }
+  
+  // // Return all products for default collection
+  // return mockProducts;
 }
 
 export async function getMenu({ handle }: { handle: string }) {

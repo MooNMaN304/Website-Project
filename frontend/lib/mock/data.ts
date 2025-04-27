@@ -53,7 +53,7 @@ export const mockProducts = [
       ]
     },
     featuredImage: {
-      url: 'https://picsum.photos/seed/picsum/800/800',
+      url: 'http://127.0.0.1:8000/static/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
       altText: 'Sample T-Shirt',
       width: 800,
       height: 800
@@ -62,7 +62,7 @@ export const mockProducts = [
       edges: [
         {
           node: {
-            url: 'https://picsum.photos/seed/picsum/800/800',
+            url: 'http://127.0.0.1:8000/static/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
             altText: 'Sample T-Shirt Front',
             width: 800,
             height: 800
@@ -70,7 +70,7 @@ export const mockProducts = [
         },
         {
           node: {
-            url: 'https://picsum.photos/seed/product1/800/800',
+            url: 'http://127.0.0.1:8000/static/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
             altText: 'Sample T-Shirt Back',
             width: 800,
             height: 800

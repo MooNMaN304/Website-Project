@@ -22,18 +22,4 @@ class CartRepository:
             raise HTTPException(status_code=404, detail="Cart not found")
         return cart
     
-
-    
-
-
-
-    
-    #Удаление корзины наверное не нужно
-    # def delete(self, user_id: int) -> None:
-    #     cart = self.get_by_user_id(user_id=user_id)
-    #     if not cart:
-    #         raise HTTPException(status_code=404, detail="Cart not found")
-    #     self.session.delete(cart)
-    #     self.session.commit()
-
-        
+  
