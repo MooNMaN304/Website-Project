@@ -1,6 +1,6 @@
 export const mockProducts = [
   {
-    id: 'product-1',
+    id: 'product-6000',
     handle: 'sample-t-shirt',
     availableForSale: true,
     title: 'Sample T-Shirt',
@@ -53,7 +53,7 @@ export const mockProducts = [
       ]
     },
     featuredImage: {
-      url: 'http://127.0.0.1:8000/static/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
+      url: 'http://127.0.0.1:8000/public/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
       altText: 'Sample T-Shirt',
       width: 800,
       height: 800
@@ -62,7 +62,7 @@ export const mockProducts = [
       edges: [
         {
           node: {
-            url: 'http://127.0.0.1:8000/static/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
+            url: 'http://127.0.0.1:8000/public/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
             altText: 'Sample T-Shirt Front',
             width: 800,
             height: 800
@@ -70,7 +70,7 @@ export const mockProducts = [
         },
         {
           node: {
-            url: 'http://127.0.0.1:8000/static/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
+            url: 'http://127.0.0.1:8000/public/%D1%88%D1%82%D0%B0%D0%BD%D1%86%D1%8B.jpeg',
             altText: 'Sample T-Shirt Back',
             width: 800,
             height: 800
@@ -85,6 +85,267 @@ export const mockProducts = [
     tags: ['t-shirt', 'clothing', 'fashion'],
     updatedAt: new Date().toISOString()
   },
+  //{
+  // "title": "dinner",
+  // "description": "Establish a against tell explain technology assume compare.",
+  // "descriptionHtml": "<p>Rise fall case turn record owner look.</p>",
+  // "handle": "short",
+  // "id": 4977,
+  // "available_for_sale": true,
+  // "priceRange": {
+  //   "minVariantPrice": {
+  //     "amount": "50.00",
+  //     "currencyCode": "USD"
+  //   },
+  //   "maxVariantPrice": {
+  //     "amount": "500.00",
+  //     "currencyCode": "USD"
+  //   }
+  // },
+  // "variants": [
+  //   {
+  //     "id": "variant-S-Red",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "S"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Red"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "456",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-S-Blue",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "S"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Blue"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "200",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-S-Green",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "S"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Green"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "296",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-M-Red",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "M"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Red"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "148",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-M-Blue",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "M"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Blue"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "417",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-M-Green",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "M"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Green"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "400",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-L-Red",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "L"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Red"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "317",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-L-Blue",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "L"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Blue"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "256",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-L-Green",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "L"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Green"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "217",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-XL-Red",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "XL"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Red"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "308",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-XL-Blue",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "XL"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Blue"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "260",
+  //       "currencyCode": "USD"
+  //     }
+  //   },
+  //   {
+  //     "id": "variant-XL-Green",
+  //     "available_for_sale": true,
+  //     "selectedOptions": [
+  //       {
+  //         "name": "Size",
+  //         "value": "XL"
+  //       },
+  //       {
+  //         "name": "Color",
+  //         "value": "Green"
+  //       }
+  //     ],
+  //     "price": {
+  //       "amount": "204",
+  //       "currencyCode": "USD"
+  //     }
+  //   }
+  // ],
+  // "featured_image": {
+  //   "url": "https://picsum.photos/640/480",
+  //   "altText": "Product Image",
+  //   "width": 640,
+  //   "height": 480
+  // },
+  // "images": [
+  //   {
+  //     "url": "https://picsum.photos/640/480",
+  //     "altText": "Product Image",
+  //     "width": 640,
+  //     "height": 480
+  //   }
+  // ],
+  // "seo": {
+  //   "title": "water",
+  //   "description": "Can real beat brother civil draw conference because official cold personal."
+  // },
+  // "tags": [
+  //   "fashion",
+  //   "clothing",
+  //   "summer"
+  // ],
+  // "updatedAt": "2025-04-30T09:31:03.420562",
+  // "rating": 0,
+  // "category_id": 3944
   {
     id: 'product-2',
     handle: 'sample-hoodie',
@@ -373,6 +634,13 @@ export const mockCart = {
   ],
   totalQuantity: 2
 };
+//----------------------------------------------------------------------
+// export const mockCart = {
+//     id: 'mock-cart-id',
+//     items: [],
+//     total: 0
+//   };
+//----------------------------------------------------------------------
 
 export const mockMenu = {
   id: 'mock-menu',

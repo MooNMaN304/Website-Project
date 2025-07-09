@@ -16,20 +16,20 @@ class UserService:
         self.user_repository = user_repository
         self.cart_repository = cart_repository
         self.token_service = token_service
-        
+
     def register(self, name: str, email: str, password: str) -> UserModel:
         hashed_password = self._hash_password(password)
         created_user = self.user_repository.create(name, email, hashed_password)
         self.cart_repository.create(created_user.id)
         return created_user
-    
+
     @staticmethod
     def _hash_password(password):
         salt = bcrypt.gensalt()
         # Хешируем пароль с солью
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed_password
-    
+
     def update_password(self, user_id: int, new_password: str) -> UserModel:
         hashed_password = self._hash_password(new_password)
         return self.user_repository.update_password(user_id, hashed_password)
@@ -38,12 +38,15 @@ class UserService:
         user = self.user_repository.get_by_email(email)
         if user is None:
             raise ValueError("Некорректный e-mail!")
-        
+
+        import binascii
+
+        stored_password_bytes = binascii.unhexlify(user.password[2:])  # remove '\\x' prefix
         # Проверяем пароль с помощью bcrypt.checkpw
-        if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        if bcrypt.checkpw(password.encode('utf-8'), stored_password_bytes):
             return self.token_service.create_access_token(user.id)
-        raise ValueError("Некорректно введен password !!!")    
-    
+        raise ValueError("Некорректно введен password !!!")
+
 
 
 

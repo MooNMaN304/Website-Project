@@ -6,94 +6,7 @@ import { TAGS } from '../constants';
  * to allow the application to run without connecting to the Shopify API.
  */
 
-function transformProduct(product, index = 1) {
-  return {
-    id: `product-${index}`,
-    handle: product.product_name.toLowerCase().replace(/\s+/g, '-'),
-    availableForSale: true,
-    title: product.product_name,
-    description: product.product_description,
-    descriptionHtml: `<p>${product.product_description}</p>`,
-    options: [
-      {
-        id: 'option-1',
-        name: 'Size',
-        values: ['S', 'M', 'L', 'XL']
-      },
-      {
-        id: 'option-2',
-        name: 'Color',
-        values: ['Black', 'White', 'Blue']
-      }
-    ],
-    priceRange: {
-      maxVariantPrice: {
-        amount: product.product_price.toFixed(2),
-        currencyCode: 'USD'
-      },
-      minVariantPrice: {
-        amount: product.product_price.toFixed(2),
-        currencyCode: 'USD'
-      }
-    },
-    variants: {
-      edges: [
-        {
-          node: {
-            id: `variant-${index}`,
-            availableForSale: true,
-            selectedOptions: [
-              {
-                name: 'Size',
-                value: product.product_size.toUpperCase()
-              },
-              {
-                name: 'Color',
-                value: capitalize(product.product_color)
-              }
-            ],
-            price: {
-              amount: product.product_price.toFixed(2),
-              currencyCode: 'USD'
-            }
-          }
-        }
-      ]
-    },
-    featuredImage: {
-      url: 'https://picsum.photos/seed/picsum/800/800',
-      altText: product.product_name,
-      width: 800,
-      height: 800
-    },
-    images: {
-      edges: [
-        {
-          node: {
-            url: 'https://picsum.photos/seed/picsum/800/800',
-            altText: `${product.product_name} Front`,
-            width: 800,
-            height: 800
-          }
-        },
-        {
-          node: {
-            url: 'https://picsum.photos/seed/product1/800/800',
-            altText: `${product.product_name} Back`,
-            width: 800,
-            height: 800
-          }
-        }
-      ]
-    },
-    seo: {
-      title: product.product_name,
-      description: product.product_description
-    },
-    tags: ['t-shirt', 'clothing', 'fashion'],
-    updatedAt: new Date().toISOString()
-  };
-}
+
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -135,9 +48,16 @@ export async function getProducts({ query, reverse, sortKey }: {
 }
 
 export async function getProduct({ handle }: { handle: string }) {
-  const product = mockProducts.find(p => p.handle === handle);
+  // handle is product-<id>  extracte id and make call to backend 
+  const product = mockProducts.find(p => p.id === handle);
+  if (product) {
+    console.log(`[MOCK] Found product: ${product.title}`);
+  } else {
+    console.log(`[MOCK] No product found with handle: ${handle}`);
+  }
   return product || null;
 }
+
 
 export async function getProductRecommendations({ productId }: { productId: string }) {
   // Return some products except the one with the given ID
@@ -180,6 +100,8 @@ export async function getCollection({ handle }: { handle: string }) {
   return collection || null;
 }
 
+
+// -----------------------------------------------------------------------------
 export async function getCollectionProducts({ 
   collection, 
   reverse, 
@@ -189,40 +111,81 @@ export async function getCollectionProducts({
   reverse?: boolean;
   sortKey?: string;
 }) {
-  // If collection handle is provided, filter products that belong to that collection
-  // For simplicity, we'll just return all products for any valid collection
-  
   try {
-    const res = await fetch(`${process.env.FASTAPI_BASE_URL}/api/products/?page=1`);
-
-    if (!res.ok) {
-      throw new Error(`FastAPI fetch failed: ${res.statusText}`);
-    }
-
+    const res = await fetch(`http://localhost:8000/api/products?page=1`);
     const data = await res.json();
-    console.log(data)
-    const transformedProducts = data.products.map((product, i) =>
-      transformProduct(product, i + 1)
-    );
-    console.log(transformedProducts);
-    return transformedProducts;
+    
+    // Преобразуем GraphQL-структуру в плоский массив продуктов
+    const products = data.edges.map((edge: any) => {
+      const product = edge.node;
+      
+      // Преобразуем variants из edges/node в плоский массив
+      const variants = product.variants.edges.map((v: any) => v.node);
+      
+      // Преобразуем images из edges/node в плоский массив
+      const images = product.images.edges.map((i: any) => i.node);
+      
+      return {
+        ...product,
+        variants,
+        images
+      };
+    });
+    
+    return products;
+    
   } catch (error) {
     console.error('Error fetching from FastAPI:', error);
+    return []; // Возвращаем пустой массив в случае ошибки
   }
-
-
-  // if (collection && mockCollections.some(c => c.handle === collection)) {
-  //   // Simulate products that belong to the specific collection
-  //   return mockProducts.filter((_, index) => {
-  //     if (collection === 'clothing') return index < 2; // First 2 products are clothing
-  //     if (collection === 'accessories') return index >= 2; // Last product is accessory
-  //     return true; // Return all for other collections
-  //   });
-  // }
-  
-  // // Return all products for default collection
-  // return mockProducts;
 }
+// -----------------------------------------------------------------------------
+// export async function getCollectionProducts({ 
+//   collection, 
+//   reverse, 
+//   sortKey 
+// }: { 
+//   collection: string;
+//   reverse?: boolean;
+//   sortKey?: string;
+// }) {
+//   // If collection handle is provided, filter products that belong to that collection
+//   // For simplicity, we'll just return all products for any valid collection
+  
+//   try {
+//     const res = await fetch(`${process.env.FASTAPI_BASE_URL}/api/products?page=1`);
+
+//     // if (!res.ok) {
+//     //   throw new Error(`FastAPI fetch failed: ${res.statusText}`);
+//     // }
+
+//     const data = await res.json();
+//     return data
+//     // console.log(data)
+//     // // const transformedProducts = data.products.map((product, i) =>
+//     // //   transformProduct(product, i + 1)
+//     // // );
+//     // // console.log(transformedProducts);
+//     // return data;
+//     // return mockProducts.map((product, i
+//   } catch (error) {
+//     console.error('Error fetching from FastAPI:', error);
+//   }
+
+
+//   // if (collection && mockCollections.some(c => c.handle === collection)) {
+//   //   // Simulate products that belong to the specific collection
+//   //   return mockProducts.filter((_, index) => {
+//   //     if (collection === 'clothing') return index < 2; // First 2 products are clothing
+//   //     if (collection === 'accessories') return index >= 2; // Last product is accessory
+//   //     return true; // Return all for other collections
+//   //   });
+//   // }
+  
+//   // // Return all products for default collection
+//   // return mockProducts;
+// }
+// -----------------------------------------------------------------------------
 
 export async function getMenu({ handle }: { handle: string }) {
   // Return our mock menu regardless of the handle for simplicity
@@ -241,43 +204,155 @@ export async function getPages() {
 }
 
 // Cart functions
+// export async function createCart() {
+//   return { ...mockCart };
+// }
+// --------------------------------------------------------------------------
+// не нужно так как корзина создается автоматически на бекенде
 export async function createCart() {
-  return { ...mockCart };
+  const res = await fetch(`http://localhost:8000/api/users/carts/`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+    },
+  });
+  return await res.json();
 }
+// --------------------------------------------------------------------------
 
-export async function addToCart({ 
-  cartId, 
-  lines 
-}: { 
+// export async function addToCart({ 
+//   cartId, 
+//   lines 
+// }: { 
+//   cartId: string;
+//   lines: { merchandiseId: string; quantity: number }[];
+// }) {
+//   // In a real implementation, we would update the cart
+//   // For now, just return the mock cart
+//   return { ...mockCart };
+// }
+// --------------------------------------------------------------------------
+export async function addToCart({
+  cartId, // можно игнорировать
+  lines
+}: {
   cartId: string;
   lines: { merchandiseId: string; quantity: number }[];
 }) {
-  // In a real implementation, we would update the cart
-  // For now, just return the mock cart
-  return { ...mockCart };
-}
+  const item = {
+    product_id: parseInt(lines[0].merchandiseId),
+    variant_id: lines[0].variantId ?? null,
+    quantity: lines[0].quantity
+  };
 
-export async function removeFromCart({ 
-  cartId, 
-  lineIds 
-}: { 
+  const res = await fetch(`http://localhost:8000/api/users/carts/items/`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+    },
+    body: JSON.stringify(item)
+  });
+
+  return await res.json();
+}
+// --------------------------------------------------------------------------
+
+// export async function removeFromCart({ 
+//   cartId, 
+//   lineIds 
+// }: { 
+//   cartId: string;
+//   lineIds: string[];
+// }) {
+//   // Just return the mock cart
+//   return { ...mockCart };
+// }
+// --------------------------------------------------------------------------
+export async function removeFromCart({
+  cartId,
+  lineIds
+}: {
   cartId: string;
   lineIds: string[];
 }) {
-  // Just return the mock cart
-  return { ...mockCart };
+  const res = await fetch(
+    `http://localhost:8000/api/users/carts/items/${lineIds[0]}/`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    }
+  );
+  return await res.json();
+}
+// --------------------------------------------------------------------------
+function getToken() {
+  const cachedToken = localStorage.getItem('authToken');
+  return cachedToken || '';
+}
+// --------------------------------------------------------------------------
+
+// export async function updateCart({ 
+//   cartId, 
+//   lines 
+// }: { 
+//   cartId: string;
+//   lines: { id: string; merchandiseId: string; quantity: number }[];
+// }) {
+//   // Just return the mock cart
+//   return { ...mockCart };
+// }
+// --------------------------------------------------------------------------
+function debounce(func: Function, wait: number) {
+  let timeout: NodeJS.Timeout;
+  return function executedFunction(...args: any[]) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
-export async function updateCart({ 
-  cartId, 
-  lines 
-}: { 
-  cartId: string;
-  lines: { id: string; merchandiseId: string; quantity: number }[];
+export async function updateCart({
+  lines
+}: {
+  lines: { id: string; merchandiseId: string; quantity: number; variantId?: string }[];
 }) {
-  // Just return the mock cart
-  return { ...mockCart };
+  const item = lines[0];
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const url = new URL(`http://localhost:8000/api/users/carts/items/${item.merchandiseId}/`);
+    url.searchParams.append('quantity', item.quantity.toString());
+    if (item.variantId) {
+      url.searchParams.append('variant_id', item.variantId);
+    }
+
+    const res = await fetch(url.toString(), {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    
+    if (!res.ok) {
+      throw new Error(`Failed to update cart: ${res.status}`);
+    }
+    
+    return await res.json();
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Request was aborted due to timeout');
+    }
+    throw error;
+  }
 }
+// --------------------------------------------------------------------------
 
 export async function getCart({ cartId }: { cartId: string }) {
   return { ...mockCart };

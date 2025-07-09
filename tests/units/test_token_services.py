@@ -6,3 +6,7 @@ def test_tokens():
     token = token_services.create_access_token(user_id)
     assert token is not None
     assert token_services.get_user(token) == user_id
+
+# Phuria
+# phuria@mail.ru
+# 1234567Qq

@@ -1,16 +1,25 @@
-from fastapi import APIRouter, Query, HTTPException, Depends, Form
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from typing import Annotated
 
-from src.database import get_db  # Импортируем get_db из database.py
-from src.repositories.user import UserRepository, NotFoundUserException
-from src.models import UserModel, CartModel, ProductModel, CartProductModel, ReviewModel, OrderModel, OrderProductModel
-from src.repositories import ReviewRepository, ProductRepository, CartRepository, CartProductRepository, OrderRepository, OrderProductRepository
-from src.services.user import UserService
-from src.services.order import OrderService
 from src.application.utils.token_services import TokenService
 from src.config import SETTINGS
+from src.database import get_db  # Импортируем get_db из database.py
+from src.models import CartModel, OrderModel, OrderProductModel, ReviewModel, UserModel
+from src.repositories import (
+    CartProductRepository,
+    CartRepository,
+    OrderProductRepository,
+    OrderRepository,
+    ProductAdapter,
+    ProductRepository,
+    ReviewRepository,
+)
+from src.repositories.user import UserRepository
+from src.services.cart_product import CartProductService
+from src.services.order import OrderService
+from src.services.product import ProductService
+from src.services.user import UserService
 
 
 def get_user_repository(db: Session = Depends(get_db)):
@@ -22,15 +31,22 @@ def get_cart_repository(db: Session = Depends(get_db)):
 
 
 def get_cart_product_repository(db: Session = Depends(get_db)) -> CartProductRepository:
-    return CartProductRepository(cart_product_model=CartProductModel, session=db)
+    return CartProductRepository(session=db)
 
 
 def get_product_repository(db: Session = Depends(get_db)) -> ProductRepository:
-    return ProductRepository(product_model=ProductModel, session=db)
+    return ProductRepository(session=db)
 
 
 def get_review_repository(db: Session = Depends(get_db)) -> ReviewRepository:
     return ReviewRepository(review_model=ReviewModel, session=db)
+
+
+def get_product_adapter(
+    product_repository: ProductRepository = Depends(get_product_repository),
+    review_repository: ReviewRepository = Depends(get_review_repository),
+) -> ProductAdapter:
+    return ProductAdapter(product_repository=product_repository, review_repo=review_repository)
 
 
 def get_order_repository(db: Session = Depends(get_db)) -> OrderRepository:
@@ -43,6 +59,23 @@ def get_order_product_repository(db: Session = Depends(get_db)) -> OrderProductR
 
 def get_token_service() -> TokenService:
     return TokenService(secret_key=SETTINGS.secret_key)
+
+
+def get_product_service(
+    product_repository: ProductRepository = Depends(get_product_repository),
+    review_repository: ReviewRepository = Depends(get_review_repository),
+) -> ProductService:
+    return ProductService(product_repository, review_repository)
+
+
+def get_cart_product_service(
+    cart_repository: CartRepository = Depends(get_cart_repository),
+    cart_product_repository: CartProductRepository = Depends(get_cart_product_repository),
+) -> CartProductService:
+    return CartProductService(
+        cart_repository=cart_repository,
+        cart_product_repository=cart_product_repository,
+    )
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -59,6 +92,10 @@ def get_user_services(
 def get_order_services(
     order_repository: OrderRepository = Depends(get_order_repository),
     order_product_repository: OrderProductRepository = Depends(get_order_product_repository),
-    cart_repository: CartRepository = Depends(get_cart_repository)
+    cart_repository: CartRepository = Depends(get_cart_repository),
 ):
-    return OrderService(order_repository=order_repository, order_product_repository=order_product_repository, cart_repository=cart_repository)
+    return OrderService(
+        order_repository=order_repository,
+        order_product_repository=order_product_repository,
+        cart_repository=cart_repository,
+    )

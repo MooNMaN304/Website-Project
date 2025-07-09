@@ -116,7 +116,9 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
 }
 
 async function RelatedProducts({ id }: { id: string }) {
-  const relatedProducts = await getProductRecommendations(id);
+  // const relatedProducts = await getProductRecommendations(id);
+
+  const relatedProducts = [];
 
   if (!relatedProducts.length) return null;
 

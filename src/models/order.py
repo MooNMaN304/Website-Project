@@ -1,20 +1,21 @@
-from sqlalchemy import Column, Integer, Boolean, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, ForeignKey, Integer
+
 from .base import AbstractBase
 
+
 class OrderModel(AbstractBase):
-    __tablename__ = 'orders'
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    __tablename__ = "orders"
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     payment = Column(Boolean, default=False)
-    
+
     # Связи
-    #products = relationship("OrderProductModel", backref="order", cascade="all, delete-orphan")
+    # products = relationship("OrderProductModel", backref="order", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"OrderModel(id={self.id}, user_id={self.user_id}, payment={self.payment})"    
+        return f"OrderModel(id={self.id}, user_id={self.user_id}, payment={self.payment})"
 
     def __str__(self):
-            return f"Заказ #{self.id} ({'оплачен' if self.payment else 'не оплачен'})"
+        return f"Заказ #{self.id} ({'оплачен' if self.payment else 'не оплачен'})"
 
 
 # from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
@@ -31,6 +32,7 @@ class OrderModel(AbstractBase):
 
 #     def __str__(self):
 #         return self.user_id, self.id, self.product_id, self.payment
-    
+
 #     def __repr__(self):
 #         return f"OrderModel('{self.user_id}', '{self.id}', '{self.product_id}', '{self.payment}')"
+

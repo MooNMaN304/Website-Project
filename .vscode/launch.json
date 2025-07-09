@@ -1,0 +1,104 @@
+// {
+//   "version": "0.2.0",
+//   "configurations": [
+//     {
+//       "name": "Next.js: Debug Server-Side (Node.js)",
+//       "type": "node",
+//       "request": "launch",
+//       "runtimeExecutable": "npm",
+//       "runtimeArgs": ["run", "dev"],
+//       "env": {
+//         "PORT": "3000",
+//         "NODE_OPTIONS": "--inspect"
+//       },
+//       "cwd": "${workspaceFolder}/frontend",
+//       "skipFiles": ["<node_internals>/**", "node_modules/**"]
+//     },
+//     {
+//       "name": "Next.js: Debug Client-Side (Edge)",
+//       "type": "edge",
+//       "request": "launch",
+//       "url": "http://localhost:3000",
+//       "webRoot": "${workspaceFolder}/frontend",
+//       "skipFiles": ["<node_internals>/**", "node_modules/**"]
+//     },
+//     {
+//       "name": "Next.js: Debug Full Stack (Node + Edge)",
+//       "type": "node",
+//       "request": "launch",
+//       "runtimeExecutable": "npm",
+//       "runtimeArgs": ["run", "dev"],
+//       "env": {
+//         "PORT": "3000",
+//         "NODE_OPTIONS": "--inspect"
+//       },
+//       "cwd": "${workspaceFolder}/frontend",
+//       "serverReadyAction": {
+//         "pattern": "started server on .+, url: (https?://.+)",
+//         "uriFormat": "%s",
+//         "action": "debugWithEdge"
+//       },
+//       "skipFiles": ["<node_internals>/**", "node_modules/**"]
+//     }
+//   ]
+// }
+
+
+// // {
+// //   "version": "0.2.0",
+// //   "configurations": [
+
+// //     {
+// //       "name": "Next.js: Debug Server-Side (Node.js)",
+// //       "type": "node-terminal",
+// //       "request": "launch",
+// //       "command": "$env:PORT=3000; npm run dev",
+// //       "cwd": "${workspaceFolder}/frontend",
+// //       "skipFiles": [
+// //         "<node_internals>/**",
+// //         "node_modules/**"
+// //       ]
+// //     },
+// //     {
+// //       "name": "Next.js: Debug Client-Side (Edge)",
+// //       "type": "edge",
+// //       "request": "launch",
+// //       "url": "http://localhost:3000",
+// //       "webRoot": "${workspaceFolder}/frontend",
+// //       "skipFiles": [
+// //         "<node_internals>/**",
+// //         "node_modules/**"
+// //       ]
+// //     },
+// //     {
+// //       "name": "Next.js: Debug Full Stack (Node + Chrome)",
+// //       "type": "node-terminal",
+// //       "request": "launch",
+// //       "command": "$env:PORT=3000; npm run dev",
+// //       "cwd": "${workspaceFolder}/frontend",
+// //       "serverReadyAction": {
+// //         "pattern": "started server on .+, url: (https?://.+)",
+// //         "uriFormat": "%s",
+// //         "action": "debugWithChrome"
+// //       },
+// //       "skipFiles": [
+// //         "<node_internals>/**",
+// //         "node_modules/**"
+// //       ]
+// //     }
+// //   ]
+// // }
+
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Запуск src.main",
+      "type": "python",
+      "request": "launch",
+      "module": "src.main",                     // Correct way to run with -m
+      "console": "integratedTerminal"
+    }
+  ]
+}

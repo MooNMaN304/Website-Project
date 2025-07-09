@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
+
 
 class ReviewSchema(BaseModel):
     rating: int = Field(ge=1, le=5, description="Rating must be an integer between 1 and 5")
+
 
 class ReviewResponce(ReviewSchema):
     review_id: int
