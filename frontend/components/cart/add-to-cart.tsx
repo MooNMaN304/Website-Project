@@ -2,7 +2,6 @@
 
 import { PlusIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { addItem } from 'components/cart/actions';
 import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
 import { useActionState } from 'react';
@@ -37,14 +36,14 @@ function SubmitButton({
         <div className="absolute left-0 ml-4">
           <PlusIcon className="h-5" />
         </div>
-        Add To Cart
+        Add To Cartssss
       </button>
     );
   }
 
   return (
     <button
-      aria-label="Add to cart"
+      aria-label=""
       className={clsx(buttonClasses, {
         'hover:opacity-90': true
       })}
@@ -61,12 +60,11 @@ export function AddToCart({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const { state } = useProduct();
-  const [message, formAction] = useActionState(addItem, null);
 
   // Handle both array of variants and GraphQL edges/nodes structure
   const variantsArray = Array.isArray(variants)
     ? variants
-    : variants.edges?.map(edge => edge.node) || [];
+    : (variants as any)?.edges?.map((edge: { node: ProductVariant }) => edge.node) || [];
 
   const variant = variantsArray.find((variant: ProductVariant) =>
     variant.selectedOptions.every(
@@ -75,25 +73,40 @@ export function AddToCart({ product }: { product: Product }) {
   );
   const defaultVariantId = variantsArray.length === 1 ? variantsArray[0]?.id : undefined;
   const selectedVariantId = variant?.id || defaultVariantId;
-  const addItemAction = formAction.bind(null, selectedVariantId);
   const finalVariant = variantsArray.find(
-    (variant) => variant.id === selectedVariantId
+    (variant: ProductVariant) => variant.id === selectedVariantId
   )!;
 
   return (
     <form
       action={async () => {
-        addCartItem(finalVariant, product);
-        addItemAction();
+        const productId = parseInt(product.id?.split('-')[1] || '0', 10);
+        try {
+          // Добавляем товар в корзину через API
+          const token = localStorage.getItem('authToken');
+          await fetch(`http://localhost:8000/api/users/carts/items/?quantity=1`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({
+              product_id: productId,
+              variant_id: selectedVariantId
+            })
+          });
+
+          // После успешного добавления на бэкенде обновляем локальную корзину
+          addCartItem(finalVariant, product);
+        } catch (error) {
+          console.error('Error adding item to cart:', error);
+        }
       }}
     >
       <SubmitButton
         availableForSale={availableForSale}
         selectedVariantId={selectedVariantId}
       />
-      <p aria-live="polite" className="sr-only" role="status">
-        {message}
-      </p>
     </form>
   );
 }

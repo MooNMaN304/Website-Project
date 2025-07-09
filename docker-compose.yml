@@ -1,16 +1,47 @@
-version: '3.8'
 
 services:
-  app:
-    build: .
+  traefik:
+    image: traefik:v3.0
+    command:
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
     ports:
-      - "8000:8000"
+      - "80:80"
+      # - "443:443"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik
+    restart: always
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
       - .:/app
-      - /app/node_modules  # Убедитесь, что это необходимо для вашего приложения
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app.rule=PathPrefix(`/api`)
+      - traefik.http.routers.app.entrypoints=web
+      - traefik.http.routers.app.priority=10
+      - traefik.http.services.app.loadbalancer.server.port=8000
+      - traefik.http.middlewares.app-stripprefix.stripprefix.prefixes=/api
+      - traefik.http.routers.app.middlewares=app-stripprefix
+    networks:
+      - traefik
+      - default
+    ports:
+      - "8000:8000"  # Expose app on port 8000
 
   db:
     image: postgres:13
@@ -26,15 +57,28 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   web:
-    build: ./frontend  # Укажите правильный путь к вашему веб-приложению
-    ports:
-      - "3000:3000"
+    build: ./frontend
     env_file:
-      - ./frontend/.env 
+      - ./frontend/.env
     volumes:
-      - ./frontend:/app  # Убедитесь, что монтируете правильный каталог
+      - ./frontend:/app
       - /app/node_modules
     command: pnpm dev
+    expose:
+      - "3000"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=PathPrefix(`/`)
+      - traefik.http.routers.web.entrypoints=web
+      - traefik.http.routers.web.priority=1
+      - traefik.http.services.web.loadbalancer.server.port=3000
+    networks:
+      - traefik
+      - default
 
 volumes:
   postgres_data:
+
+networks:
+  traefik:
+    driver: bridge

@@ -1,0 +1,1013 @@
+2025-07-02 19:42:30,740 - app - INFO - Юзер с user@132example.com зарегистрировался в приложении
+2025-07-02 19:46:20,522 - app - ERROR - Unhandled exception: NoneType: None
+
+2025-07-02 19:49:45,380 - app - ERROR - Unhandled exception: NoneType: None
+
+2025-07-02 19:51:05,186 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 48, in create_user
+    i =0 / 0
+       ~~^~~
+ZeroDivisionError: division by zero
+
+2025-07-02 19:51:09,306 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 48, in create_user
+    i =0 / 0
+       ~~^~~
+ZeroDivisionError: division by zero
+
+2025-07-02 19:51:10,822 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 48, in create_user
+    i =0 / 0
+       ~~^~~
+ZeroDivisionError: division by zero
+
+2025-07-05 17:19:15,031 - app - INFO - Юзер с vasko@tobasko123.ru зарегистрировался в приложении
+2025-07-06 11:29:08,825 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 942, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: ОШИБКА:  повторяющееся значение ключа нарушает ограничение уникальности "users_email_key"
+DETAIL:  Ключ "(email)=(vasko@tobasko.ru)" уже существует.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\User\Desktop\programmer\Website Project\src\repositories\user.py", line 23, in create
+    self.session.commit()
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4353, in flush
+    self._flush(objects)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4488, in _flush
+    with util.safe_reraise():
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4449, in _flush
+    flush_context.execute()
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1416, in execute
+    return meth(
+           ^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1638, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1843, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1983, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2352, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 942, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) ОШИБКА:  повторяющееся значение ключа нарушает ограничение уникальности "users_email_key"
+DETAIL:  Ключ "(email)=(vasko@tobasko.ru)" уже существует.
+
+[SQL: INSERT INTO users (name, email, password, created_at, updated_at) VALUES (%(name)s, %(email)s, %(password)s, %(created_at)s, %(updated_at)s) RETURNING users.id]
+[parameters: {'name': 'string334231323', 'email': 'vasko@tobasko.ru', 'password': b'$2b$12$JMSedNnY2YedPK4UUpqqMOPKLofCz/Rg8BZdAV7zviMQTvNt6lk7G', 'created_at': datetime.datetime(2025, 7, 6, 8, 29, 8, 589571), 'updated_at': datetime.datetime(2025, 7, 6, 8, 29, 8, 589571)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 59, in create_user
+    new_user = user_services.register(email=data.email, password=data.password, name=data.username)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\services\user.py", line 22, in register
+    created_user = self.user_repository.create(name, email, hashed_password)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\repositories\user.py", line 26, in create
+    raise ValueError("User with this email already exists")
+ValueError: User with this email already exists
+
+2025-07-06 11:37:35,662 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 82, in update_user_password
+    user_service.update_password(user_id, new_password)
+  File "C:\Users\User\Desktop\programmer\Website Project\src\services\user.py", line 35, in update_password
+    return self.user_repository.update_password(user_id, hashed_password)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\repositories\user.py", line 32, in update_password
+    raise ValueError("User not found")
+ValueError: User not found
+
+2025-07-06 11:38:56,738 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 127, in login_user
+    token = user_service.login(data.email, data.password)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\services\user.py", line 48, in login
+    raise ValueError("Некорректно введен password !!!")
+ValueError: Некорректно введен password !!!
+
+2025-07-06 11:39:39,491 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 127, in login_user
+    token = user_service.login(data.email, data.password)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\services\user.py", line 48, in login
+    raise ValueError("Некорректно введен password !!!")
+ValueError: Некорректно введен password !!!
+
+2025-07-06 11:40:06,367 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 11:40:21,372 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 11:42:28,780 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 11:42:45,617 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 14:12:56,927 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-06 14:12:57,025 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-06 14:13:22,572 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 14:14:12,006 - app - INFO - Продукт 6552 успешно получен
+2025-07-06 14:14:42,301 - app - ERROR - Ошибка при получении продукта 666: Product with ID=666 not found
+2025-07-06 15:08:39,310 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 15:09:25,685 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 942, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UniqueViolation: ОШИБКА:  повторяющееся значение ключа нарушает ограничение уникальности "users_email_key"
+DETAIL:  Ключ "(email)=(vasko@tobasko.ru)" уже существует.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\User\Desktop\programmer\Website Project\src\repositories\user.py", line 23, in create
+    self.session.commit()
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4353, in flush
+    self._flush(objects)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4488, in _flush
+    with util.safe_reraise():
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4449, in _flush
+    flush_context.execute()
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1416, in execute
+    return meth(
+           ^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1638, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1843, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1983, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2352, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 942, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.UniqueViolation) ОШИБКА:  повторяющееся значение ключа нарушает ограничение уникальности "users_email_key"
+DETAIL:  Ключ "(email)=(vasko@tobasko.ru)" уже существует.
+
+[SQL: INSERT INTO users (name, email, password, created_at, updated_at) VALUES (%(name)s, %(email)s, %(password)s, %(created_at)s, %(updated_at)s) RETURNING users.id]
+[parameters: {'name': 'string1231231', 'email': 'vasko@tobasko.ru', 'password': b'$2b$12$yPuMFgfULJD8ChFPnUdJ7eWCFghyY6TyI7o67P97As.CxuZ4XYdgq', 'created_at': datetime.datetime(2025, 7, 6, 12, 9, 25, 577168), 'updated_at': datetime.datetime(2025, 7, 6, 12, 9, 25, 577168)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 59, in create_user
+    new_user = user_services.register(email=data.email, password=data.password, name=data.username)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\services\user.py", line 22, in register
+    created_user = self.user_repository.create(name, email, hashed_password)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\repositories\user.py", line 26, in create
+    raise ValueError("User with this email already exists")
+ValueError: User with this email already exists
+
+2025-07-06 15:15:46,990 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 15:15:47,037 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 291, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 640, in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\depends.py", line 75, in get_cart_product_service
+    return CartProductService(
+           ^^^^^^^^^^^^^^^^^^^
+TypeError: CartProductService.__init__() got an unexpected keyword argument 'cart_product_model'
+
+2025-07-06 15:15:47,927 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-06 15:15:48,077 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-06 15:16:10,300 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 291, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 640, in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\depends.py", line 75, in get_cart_product_service
+    return CartProductService(
+           ^^^^^^^^^^^^^^^^^^^
+TypeError: CartProductService.__init__() got an unexpected keyword argument 'cart_product_model'
+
+2025-07-06 15:16:10,625 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 291, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 640, in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\depends.py", line 75, in get_cart_product_service
+    return CartProductService(
+           ^^^^^^^^^^^^^^^^^^^
+TypeError: CartProductService.__init__() got an unexpected keyword argument 'cart_product_model'
+
+2025-07-06 15:17:38,010 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 291, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 640, in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\depends.py", line 75, in get_cart_product_service
+    return CartProductService(
+           ^^^^^^^^^^^^^^^^^^^
+TypeError: CartProductService.__init__() got an unexpected keyword argument 'cart_product_model'
+
+2025-07-06 15:17:38,027 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 291, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 640, in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\depends.py", line 75, in get_cart_product_service
+    return CartProductService(
+           ^^^^^^^^^^^^^^^^^^^
+TypeError: CartProductService.__init__() got an unexpected keyword argument 'cart_product_model'
+
+2025-07-06 15:18:45,271 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 15:18:57,880 - app - INFO - Продукт 6553 успешно получен
+2025-07-06 15:29:29,842 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 15:30:24,337 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-06 15:31:23,936 - app - INFO - Продукт 6552 успешно получен
+2025-07-06 15:33:07,709 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-06 15:33:07,712 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-06 15:33:24,137 - app - INFO - Продукт 6553 успешно получен
+2025-07-06 15:33:46,237 - app - INFO - Updated quantity for product 6553 in cart 187
+2025-07-06 15:33:49,265 - app - INFO - Updated quantity for product 6553 in cart 187
+2025-07-06 15:33:51,303 - app - INFO - Removed product 6553 from cart 187
+2025-07-06 15:34:12,379 - app - INFO - Updated quantity for product 6552 in cart 187
+2025-07-09 00:03:29,688 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:03:29,690 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:03:47,454 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:03:50,255 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:03:50,256 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:03:55,414 - app - INFO - Updated quantity for product 6552 in cart 187
+2025-07-09 00:03:57,543 - app - INFO - Updated quantity for product 6552 in cart 187
+2025-07-09 00:04:00,875 - app - INFO - Updated quantity for product 6553 in cart 187
+2025-07-09 00:04:08,638 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:04:08,638 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:04:18,594 - app - INFO - Попытка создать заказ для пользователя 1587
+2025-07-09 00:04:18,595 - app - INFO - Создание заказа для пользователя 1587
+2025-07-09 00:04:18,614 - app - INFO - Создан заказ с ID 33 для пользователя 1587
+2025-07-09 00:04:19,378 - app - INFO - Пользователь 1587 запрашивает заказ 33
+2025-07-09 00:04:19,379 - app - INFO - Получение заказа с ID 33
+2025-07-09 00:04:19,390 - app - INFO - Пользователь 1587 запрашивает заказ 33
+2025-07-09 00:04:19,390 - app - INFO - Получение заказа с ID 33
+2025-07-09 00:25:58,160 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:25:58,161 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:26:11,419 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:26:16,966 - app - INFO - Updated quantity for product 6553 in cart 187
+2025-07-09 00:26:21,189 - app - INFO - Updated quantity for product 6554 in cart 187
+2025-07-09 00:26:31,467 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:26:31,467 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:28:12,677 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:28:12,677 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:28:47,396 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:28:47,398 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:28:47,912 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:28:47,913 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:28:49,441 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:28:49,441 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:29:14,913 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:29:14,918 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:29:15,735 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:29:15,735 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:29:21,323 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:29:21,326 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:30:04,761 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:30:04,766 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:30:07,797 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:31:19,095 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:31:19,189 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:31:19,854 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:31:19,854 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:31:21,171 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:31:21,171 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:31:30,113 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:31:31,655 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:31:31,656 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:31:34,147 - app - INFO - Продукт 6552 успешно получен
+2025-07-09 00:33:36,756 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:33:36,758 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:33:37,316 - app - INFO - Продукт 6552 успешно получен
+2025-07-09 00:33:38,101 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:33:38,102 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:33:47,772 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:33:47,772 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:33:54,087 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:33:54,088 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:34:33,835 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:34:33,835 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:34:55,963 - app - INFO - Продукт 6552 успешно получен
+2025-07-09 00:34:56,717 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:34:56,720 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:34:57,499 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:34:57,504 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:35:35,509 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:35:35,594 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:35:36,239 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:35:36,239 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:35:50,267 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:37:31,356 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:37:31,356 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:37:31,440 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:37:31,441 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:51:17,018 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:51:17,018 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:52:04,555 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:52:04,559 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:54:20,357 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:54:20,359 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:54:23,358 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:54:32,536 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:54:32,539 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:54:33,746 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:54:33,747 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:54:37,615 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:54:37,616 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:55:06,098 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:55:06,098 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:58:43,780 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:58:43,781 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:58:56,581 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:58:56,581 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:58:58,063 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:58:58,063 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:59:08,430 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:59:11,149 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:59:11,151 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 00:59:11,417 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 00:59:14,095 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 00:59:14,095 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:03:43,888 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 01:03:43,892 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 01:03:45,145 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:03:45,145 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:03:47,776 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:03:47,777 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:03:47,864 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:03:47,867 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:04:05,164 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 01:04:09,678 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:04:09,678 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:05:28,065 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 01:05:28,068 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 01:05:28,975 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:05:28,976 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:05:30,705 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 01:05:30,705 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:50:36,401 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 18:50:36,403 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-09 18:51:40,070 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 18:51:41,877 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:51:41,878 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:55:35,078 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:55:35,078 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:55:37,041 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:55:37,042 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:55:39,990 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:55:39,990 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:55:43,783 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-09 18:56:45,720 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:56:45,720 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:03,290 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:03,290 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:13,514 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:13,515 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:18,617 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:18,617 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:23,496 - app - INFO - Попытка создать заказ для пользователя 1587
+2025-07-09 18:57:23,496 - app - INFO - Создание заказа для пользователя 1587
+2025-07-09 18:57:23,513 - app - INFO - Создан заказ с ID 34 для пользователя 1587
+2025-07-09 18:57:24,319 - app - INFO - Пользователь 1587 запрашивает заказ 34
+2025-07-09 18:57:24,319 - app - INFO - Получение заказа с ID 34
+2025-07-09 18:57:24,331 - app - INFO - Пользователь 1587 запрашивает заказ 34
+2025-07-09 18:57:24,331 - app - INFO - Получение заказа с ID 34
+2025-07-09 18:57:39,550 - app - INFO - Пользователь 1587 запрашивает заказ 34
+2025-07-09 18:57:39,550 - app - INFO - Получение заказа с ID 34
+2025-07-09 18:57:39,558 - app - INFO - Пользователь 1587 запрашивает заказ 34
+2025-07-09 18:57:39,558 - app - INFO - Получение заказа с ID 34
+2025-07-09 18:57:43,676 - app - INFO - Получение всех заказов пользователя 1587
+2025-07-09 18:57:43,676 - app - INFO - Получение всех заказов пользователя 1587

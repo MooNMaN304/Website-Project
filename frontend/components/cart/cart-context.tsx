@@ -2,203 +2,441 @@
 
 import type {
   Cart,
-  CartItem,
   Product,
   ProductVariant
 } from 'lib/shopify/types';
 import React, {
   createContext,
-  use,
   useContext,
   useMemo,
-  useOptimistic
+  useState,
+  useEffect,
+  useCallback,
+  useRef
 } from 'react';
+import {
+  getCart as getLocalCart,
+  addProductToCart,
+  updateCart as updateLocalCart,
+  removeFromCart as removeFromLocalCart
+} from 'lib/cart';
 
 type UpdateType = 'plus' | 'minus' | 'delete';
 
-type CartAction =
-  | {
-      type: 'UPDATE_ITEM';
-      payload: { merchandiseId: string; updateType: UpdateType };
-    }
-  | {
-      type: 'ADD_ITEM';
-      payload: { variant: ProductVariant; product: Product };
-    };
-
 type CartContextType = {
-  cartPromise: Promise<Cart | undefined>;
+  cart: Cart | undefined;
+  setCart: React.Dispatch<React.SetStateAction<Cart | undefined>>;
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
+  isLoading: boolean;
+  updateCartItem: (merchandiseId: string, updateType: UpdateType) => Promise<void>;
+  addCartItem: (variant: ProductVariant, product: Product) => Promise<void>;
+  initializeCart: () => Promise<void>;
+  clearCart: () => void;
 };
+
+// Helper function to build delete URL from cart item
+function buildDeleteUrl(cartItem: any): string | null {
+  try {
+    if (!cartItem?.merchandise?.product?.id) {
+      console.error('Invalid cart item structure for delete URL:', cartItem);
+      return null;
+    }
+
+    // Extract product ID from the backend format: "product-123" -> 123
+    const productIdMatch = cartItem.merchandise.product.id.match(/product-(\d+)/);
+    if (!productIdMatch || !productIdMatch[1]) {
+      console.error('Invalid product ID format:', cartItem.merchandise.product.id);
+      return null;
+    }
+
+    const productId = parseInt(productIdMatch[1], 10);
+    if (isNaN(productId)) {
+      console.error('Invalid product ID:', productIdMatch[1]);
+      return null;
+    }
+
+    const variant_id = cartItem.merchandise.id;
+
+    let url = `/api/users/carts/items/${productId}/`;
+    if (variant_id) {
+      url += `?variant_id=${encodeURIComponent(variant_id)}`;
+    }
+    return url;
+  } catch (error) {
+    console.error('Error building delete URL:', error);
+  }
+  return null;
+}
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-function calculateItemCost(quantity: number, price: string): string {
-  return (Number(price) * quantity).toString();
-}
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => Promise<ReturnType<T>> {
+  let timeoutId: NodeJS.Timeout | null = null;
+  let currentPromise: Promise<ReturnType<T>> | null = null;
 
-function updateCartItem(
-  item: CartItem,
-  updateType: UpdateType
-): CartItem | null {
-  if (updateType === 'delete') return null;
-
-  const newQuantity =
-    updateType === 'plus' ? item.quantity + 1 : item.quantity - 1;
-  if (newQuantity === 0) return null;
-
-  const singleItemAmount = Number(item.cost.totalAmount.amount) / item.quantity;
-  const newTotalAmount = calculateItemCost(
-    newQuantity,
-    singleItemAmount.toString()
-  );
-
-  return {
-    ...item,
-    quantity: newQuantity,
-    cost: {
-      ...item.cost,
-      totalAmount: {
-        ...item.cost.totalAmount,
-        amount: newTotalAmount
-      }
+  return function executedFunction(...args: Parameters<T>): Promise<ReturnType<T>> {
+    // Если уже есть активный промис, возвращаем его
+    if (currentPromise) {
+      return currentPromise;
     }
-  };
-}
 
-function createOrUpdateCartItem(
-  existingItem: CartItem | undefined,
-  variant: ProductVariant,
-  product: Product
-): CartItem {
-  const quantity = existingItem ? existingItem.quantity + 1 : 1;
-  const totalAmount = calculateItemCost(quantity, variant.price.amount);
-
-  return {
-    id: existingItem?.id,
-    quantity,
-    cost: {
-      totalAmount: {
-        amount: totalAmount,
-        currencyCode: variant.price.currencyCode
-      }
-    },
-    merchandise: {
-      id: variant.id,
-      title: variant.title,
-      selectedOptions: variant.selectedOptions,
-      product: {
-        id: product.id,
-        handle: product.handle,
-        title: product.title,
-        featuredImage: product.featuredImage
-      }
-    }
-  };
-}
-
-function updateCartTotals(
-  lines: CartItem[]
-): Pick<Cart, 'totalQuantity' | 'cost'> {
-  const totalQuantity = lines.reduce((sum, item) => sum + item.quantity, 0);
-  const totalAmount = lines.reduce(
-    (sum, item) => sum + Number(item.cost.totalAmount.amount),
-    0
-  );
-  const currencyCode = lines[0]?.cost.totalAmount.currencyCode ?? 'USD';
-
-  return {
-    totalQuantity,
-    cost: {
-      subtotalAmount: { amount: totalAmount.toString(), currencyCode },
-      totalAmount: { amount: totalAmount.toString(), currencyCode },
-      totalTaxAmount: { amount: '0', currencyCode }
-    }
-  };
-}
-
-function createEmptyCart(): Cart {
-  return {
-    id: undefined,
-    checkoutUrl: '',
-    totalQuantity: 0,
-    lines: [],
-    cost: {
-      subtotalAmount: { amount: '0', currencyCode: 'USD' },
-      totalAmount: { amount: '0', currencyCode: 'USD' },
-      totalTaxAmount: { amount: '0', currencyCode: 'USD' }
-    }
-  };
-}
-
-function cartReducer(state: Cart | undefined, action: CartAction): Cart {
-  const currentCart = state || createEmptyCart();
-
-  switch (action.type) {
-    case 'UPDATE_ITEM': {
-      const { merchandiseId, updateType } = action.payload;
-      const updatedLines = currentCart.lines
-        .map((item) =>
-          item.merchandise.id === merchandiseId
-            ? updateCartItem(item, updateType)
-            : item
-        )
-        .filter(Boolean) as CartItem[];
-
-      if (updatedLines.length === 0) {
-        return {
-          ...currentCart,
-          lines: [],
-          totalQuantity: 0,
-          cost: {
-            ...currentCart.cost,
-            totalAmount: { ...currentCart.cost.totalAmount, amount: '0' }
-          }
-        };
+    // Создаем новый промис
+    currentPromise = new Promise((resolve, reject) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
 
-      return {
-        ...currentCart,
-        ...updateCartTotals(updatedLines),
-        lines: updatedLines
-      };
-    }
-    case 'ADD_ITEM': {
-      const { variant, product } = action.payload;
-      const existingItem = currentCart.lines.find(
-        (item) => item.merchandise.id === variant.id
-      );
-      const updatedItem = createOrUpdateCartItem(
-        existingItem,
-        variant,
-        product
-      );
+      timeoutId = setTimeout(async () => {
+        try {
+          const result = await func(...args);
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        } finally {
+          currentPromise = null;
+          timeoutId = null;
+        }
+      }, wait);
+    });
 
-      const updatedLines = existingItem
-        ? currentCart.lines.map((item) =>
-            item.merchandise.id === variant.id ? updatedItem : item
-          )
-        : [...currentCart.lines, updatedItem];
-
-      return {
-        ...currentCart,
-        ...updateCartTotals(updatedLines),
-        lines: updatedLines
-      };
-    }
-    default:
-      return currentCart;
-  }
+    return currentPromise;
+  };
 }
 
 export function CartProvider({
-  children,
-  cartPromise
+  children
 }: {
   children: React.ReactNode;
-  cartPromise: Promise<Cart | undefined>;
 }) {
+  const [cart, setCart] = useState<Cart | undefined>(undefined);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const operationsInProgress = useRef(new Map());
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const updateQueue = useRef<Map<string, number>>(new Map());
+
+  const isOperationInProgress = useCallback((key: string) => {
+    return operationsInProgress.current.has(key);
+  }, []);
+
+  const setOperationInProgress = useCallback((key: string, value: boolean) => {
+    if (value) {
+      operationsInProgress.current.set(key, true);
+    } else {
+      operationsInProgress.current.delete(key);
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const newToken = token || null;
+
+    // Only update if token actually changed
+    if (newToken !== authToken) {
+      setAuthToken(newToken);
+    }
+
+    // Listen for storage changes (including from other tabs/components)
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'authToken') {
+        const newTokenFromStorage = event.newValue;
+        if (newTokenFromStorage !== authToken) {
+          setAuthToken(newTokenFromStorage);
+        }
+      }
+    };
+
+    // Listen for custom auth events
+    const handleAuthChange = () => {
+      const currentToken = localStorage.getItem('authToken');
+      if (currentToken !== authToken) {
+        setAuthToken(currentToken);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('storage', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storage', handleAuthChange);
+    };
+  }, [authToken]);
+
+  const initializeCart = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      console.log('Initializing cart...');
+
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        const response = await fetch('/api/users/carts/', {  // Добавляем слеш в конце URL
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+
+        if (response.ok) {
+          const cartData = await response.json();
+          console.log('Loaded cart from backend:', cartData);
+
+          // Ensure cartData has the expected structure
+          if (!cartData || !Array.isArray(cartData.items)) {
+            console.error('Invalid cart data structure:', cartData);
+            setCart(undefined);
+            return;
+          }
+
+          const totalQuantity = cartData.items.reduce((sum: number, item: any) => sum + (item?.quantity || 0), 0);
+          const totalPrice = cartData.total_price || 0;
+
+          setCart({
+            id: 'cart-id',
+            checkoutUrl: '/checkout',
+            cost: {
+              subtotalAmount: {
+                amount: totalPrice.toString(),
+                currencyCode: 'USD'
+              },
+              totalAmount: {
+                amount: totalPrice.toString(),
+                currencyCode: 'USD'
+              },
+              totalTaxAmount: {
+                amount: '0',
+                currencyCode: 'USD'
+              }
+            },
+            lines: cartData.items.map((item: any) => {
+              // The backend already returns items in the correct Shopify-like format
+              if (!item || !item.merchandise || !item.merchandise.product) {
+                console.warn('Invalid cart item:', item);
+                return null;
+              }
+
+              return {
+                id: item.id || '',
+                quantity: item.quantity || 0,
+                cost: item.cost || {
+                  totalAmount: {
+                    amount: '0',
+                    currencyCode: 'USD'
+                  }
+                },
+                merchandise: item.merchandise
+              };
+            }).filter(Boolean), // Remove any null items
+            totalQuantity
+          });
+        } else {
+          const errorText = await response.text();
+          console.error('Failed to load cart from backend:', response.status);
+          console.error('Error details:', errorText);
+          setCart(undefined);
+        }
+      } else {
+        setCart(undefined);
+      }
+    } catch (error) {
+      console.error('Error initializing cart:', error);
+      setCart(undefined);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Re-initialize cart whenever auth token changes
+    initializeCart();
+  }, [authToken, initializeCart]);
+
+  const debouncedUpdateCart = useCallback(
+    debounce(async (merchandiseId: string, updateType: UpdateType) => {
+      if (!cart) return;
+
+      const itemToUpdate = cart.lines.find(item => item.merchandise.id === merchandiseId);
+      if (!itemToUpdate) return;
+
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      try {
+        const productIdMatch = itemToUpdate.merchandise.product.id.match(/product-(\d+)/);
+        if (!productIdMatch?.[1]) return;
+
+        const productId = parseInt(productIdMatch[1], 10);
+        if (isNaN(productId)) return;
+
+        const newQuantity = updateType === 'plus' ? itemToUpdate.quantity + 1 : itemToUpdate.quantity - 1;
+
+        // Оптимистично обновляем UI немедленно
+        setCart(prevCart => {
+          if (!prevCart) return prevCart;
+          return {
+            ...prevCart,
+            lines: prevCart.lines.map(line => {
+              if (line.merchandise.id === merchandiseId) {
+                return {
+                  ...line,
+                  quantity: newQuantity
+                };
+              }
+              return line;
+            }).filter(line => line.quantity > 0)
+          };
+        });
+
+        if (newQuantity === 0) {
+          const url = buildDeleteUrl(itemToUpdate);
+          if (url) {
+            await fetch(url, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+              },
+              credentials: 'same-origin'
+            });
+          }
+        } else {
+          await fetch(
+            `/api/users/carts/items/${productId}/?variant_id=${encodeURIComponent(itemToUpdate.merchandise.id)}&quantity=${newQuantity}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+              },
+              credentials: 'same-origin'
+            }
+          );
+        }
+
+        // Задержка перед обновлением с сервера для избежания гонки состояний
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await initializeCart();
+      } catch (error) {
+        console.error('Error updating cart:', error);
+        // В случае ошибки откатываем оптимистичное обновление
+        await initializeCart();
+      }
+    }, 500), // Увеличиваем время дебаунсинга до 500мс
+    [cart, initializeCart]
+  );
+
+  const updateCartItem = useCallback(async (merchandiseId: string, updateType: UpdateType) => {
+    const operationKey = `${merchandiseId}-${updateType}`;
+
+    if (isOperationInProgress(operationKey)) {
+      return;
+    }
+
+    try {
+      setOperationInProgress(operationKey, true);
+      await debouncedUpdateCart(merchandiseId, updateType);
+    } finally {
+      setTimeout(() => {
+        setOperationInProgress(operationKey, false);
+      }, 300); // Добавляем задержку перед сбросом состояния операции
+    }
+  }, [debouncedUpdateCart, isOperationInProgress, setOperationInProgress]);
+
+  const addCartItem = useCallback(async (variant: ProductVariant, product: Product) => {
+    const operationKey = `add-${variant.id}`;
+
+    if (isOperationInProgress(operationKey)) {
+      console.log('Add operation already in progress:', operationKey);
+      return;
+    }
+
+    try {
+      setOperationInProgress(operationKey, true);
+
+      // Сначала добавляем товар локально
+      const updatedCart = await addProductToCart(variant, product);
+      setCart(updatedCart);
+
+      // Затем отправляем запрос на бэкенд
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          // Extract product ID from the backend format: "product-123" -> 123 or "gid://shopify/Product/123" -> 123
+          let productIdMatch = product.id.match(/product-(\d+)/);
+          if (!productIdMatch) {
+            productIdMatch = product.id.match(/Product\/(\d+)/);
+          }
+          if (!productIdMatch || !productIdMatch[1]) {
+            console.error('Invalid product ID format:', product.id);
+            return;
+          }
+
+          const productId = parseInt(productIdMatch[1], 10);
+          if (isNaN(productId)) {
+            console.error('Invalid product ID:', productIdMatch[1]);
+            return;
+          }
+
+          await fetch('/api/users/carts/items/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              product_id: productId,
+              variant_id: variant.id,
+              quantity: 1,
+            }),
+          });
+
+          // После успешного добавления обновляем корзину с сервера
+          await initializeCart();
+        } catch (error) {
+          console.error('Failed to add item to backend cart:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    } finally {
+      setOperationInProgress(operationKey, false);
+    }
+  }, [setCart, isOperationInProgress, initializeCart]);
+
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
+
+  const clearCart = useCallback(() => {
+    setCart(undefined);
+    // Also clear from localStorage if using local storage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('local_cart');
+    }
+  }, []);
+
+  const value = useMemo(() => ({
+    cart,
+    setCart,
+    isOpen,
+    openCart,
+    closeCart,
+    isLoading,
+    updateCartItem,
+    addCartItem,
+    initializeCart,
+    clearCart
+  }), [cart, isOpen, openCart, closeCart, isLoading, updateCartItem, addCartItem, initializeCart, clearCart]);
+
   return (
-    <CartContext.Provider value={{ cartPromise }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
@@ -206,33 +444,10 @@ export function CartProvider({
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (context === undefined) {
+
+  if (!context) {
     throw new Error('useCart must be used within a CartProvider');
   }
 
-  const initialCart = use(context.cartPromise);
-  const [optimisticCart, updateOptimisticCart] = useOptimistic(
-    initialCart,
-    cartReducer
-  );
-
-  const updateCartItem = (merchandiseId: string, updateType: UpdateType) => {
-    updateOptimisticCart({
-      type: 'UPDATE_ITEM',
-      payload: { merchandiseId, updateType }
-    });
-  };
-
-  const addCartItem = (variant: ProductVariant, product: Product) => {
-    updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product } });
-  };
-
-  return useMemo(
-    () => ({
-      cart: optimisticCart,
-      updateCartItem,
-      addCartItem
-    }),
-    [optimisticCart]
-  );
+  return context;
 }

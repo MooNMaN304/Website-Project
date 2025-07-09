@@ -1,141 +1,129 @@
+import logging
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-from src.models.cart import CartModel
-from src.repositories.cart import CartRepository
-from src.repositories.cart_product import CartProductRepository
-from src.database import get_db
-from src.services.user import UserService
+
+from src.application.sсhemas import CartProductRequestSchema, CartResponseSchema, CartUpdateResponseSchema
 from src.application.utils.token_services import TokenService
-from src.application.routers.depends import get_cart_repository, get_token_service, get_cart_product_repository
-from ..shemas import CartResponse, CartProductResponse  # Импортируем схему
-from .depends import oauth2_scheme 
+from src.repositories.cart import CartRepository
+from src.services.cart_product import CartProductService
+
+from .depends import (
+    get_cart_product_service,
+    get_cart_repository,
+    get_token_service,
+    oauth2_scheme,
+)
+
+logger = logging.getLogger(__name__)
+router = APIRouter(tags=["Корзина"])
 
 
-router = APIRouter()
+def build_cart_response(user_id: int, cart_id: int, cart_product_service: CartProductService) -> CartResponseSchema:
+    items_models = cart_product_service.cart_product_repo.get_products_in_cart(cart_id=cart_id)
+    items = [cart_product_service.serialize_cart_item(cp) for cp in items_models]
+    return CartResponseSchema(
+        user_id=user_id,
+        items=items,
+        total_items=cart_product_service.get_total_items(cart_id),
+        total_price=cart_product_service.get_total_price(cart_id),
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+    )
 
 
-# Добавление товара в корзину
 @router.post(
-    "/users/carts/",
-    tags=["Корзина"],
-    summary="Добавление товара в корзину юзером",
-    response_model=CartProductResponse,  # Указываем схему ответа
-    status_code=status.HTTP_201_CREATED
+    "/users/carts/items/",
+    summary="Добавить товар в корзину",
+    response_model=CartResponseSchema,
+    status_code=status.HTTP_201_CREATED,
 )
-def add_product_to_cart(
-    request: CartProductResponse,
-    token: str = Depends(oauth2_scheme), # Токен извлекается из заголовка
-    token_service: TokenService = Depends(get_token_service),
-    cart_repository: CartRepository = Depends(get_cart_repository),
-    cart_product_repository: CartProductRepository = Depends(get_cart_product_repository),
-):
-# 1. Получаем ID пользователя из токена
-#--------------------------------------
-    user_id = token_service.get_user(token)
-    #этот код есть в функции
-    # if not user_id:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="Invalid token")
-
-    # Получаем корзину пользователя
-    cart = cart_repository.get_by_user_id(user_id)
-    #этот код есть в функции
-    # if not cart:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND,
-    #         detail="Cart not found")
-
-    # Добавляем товар в корзину
-    try:
-        cart_product = cart_product_repository.add_product(
-            cart_id=cart.id,
-            product_id=request.product_id,
-            quantity=request.quantity)
-        return CartProductResponse(
-            message="Продукт успешно добавлен в корзину",
-            product_id=cart_product.product_id,
-            quantity=cart_product.quantity) # Возвращаем корзину с обновленными данными
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)) from e
-
-# 2. Удаляем продукт из корзины полностью
-#----------------------------------------  
-@router.delete(
-    "/users/carts/products/{product_id}/",
-    tags=["Корзина"],
-    summary="Удаление товара из корзины юзером",
-    response_model=CartResponse,
-    status_code=status.HTTP_200_OK
-)
-def delete_product_from_cart(
-    product_id: int,
+def add_to_cart(
+    item: CartProductRequestSchema,
     token: str = Depends(oauth2_scheme),
     token_service: TokenService = Depends(get_token_service),
-    cart_repository: CartRepository = Depends(get_cart_repository),
-    cart_product_repository: CartProductRepository = Depends(get_cart_product_repository),
+    cart_repo: CartRepository = Depends(get_cart_repository),
+    cart_product_service: CartProductService = Depends(get_cart_product_service),
 ):
     user_id = token_service.get_user(token)
-    
-    cart = cart_repository.get_by_user_id(user_id)
-    
-    try:
-        cart_product_repository.remove_product(cart_id=cart.id, product_id=product_id)
+    cart = cart_repo.get_by_user_id(user_id)
 
-        # Получаем обновленный список продуктов в корзине после удаления
-        updated_products = cart_product_repository.get_products_in_cart(cart.id)
-        
-        # Подсчитываем общее количество товаров и общую стоимость
-        total_items = len(updated_products)
-        total_price = sum(product.price * product.quantity for product in updated_products)
-        # return CartResponse(message="Product removed successfully", product_id=product_id)
-        return CartResponse(
-            id=cart.id,
-            user_id=user_id,
-            products=[CartProductResponse(product_id=prod.product_id, quantity=prod.quantity) for prod in updated_products],
-            total_items=total_items,
-            total_price=total_price,
-            message="Товар успешно удален из корзины"
+    try:
+        cart_product_service.cart_product_repo.add_product(
+            cart_id=cart.id, product_id=item.product_id, variant_id=item.variant_id, quantity=item.quantity
         )
+        logger.info(f"Added product {item.product_id} to cart")
+        return build_cart_response(user_id, cart.id, cart_product_service)
 
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)) from e
-    
-# 3. Меняем колличества товара в корзине
-#---------------------------------------
-@router.put(
-    "/users/carts/products/{product_id}/",
-    tags=["Корзина"],
-    summary="Изменение количества товара в корзине",
-    response_model=CartResponse,
-    status_code=status.HTTP_200_OK
-    )
-def change_product_quantity_in_cart(
+        logger.error(f"Failed to add product to cart: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.put("/users/carts/items/{product_id}/", summary="Обновить количество товара", response_model=CartResponseSchema)
+def update_cart_item(
     product_id: int,
     quantity: int,
+    variant_id: str | None = None,
     token: str = Depends(oauth2_scheme),
     token_service: TokenService = Depends(get_token_service),
-    cart_repository: CartRepository = Depends(get_cart_repository),
-    cart_product_repository: CartProductRepository = Depends(get_cart_product_repository),
-    ):
+    cart_repo: CartRepository = Depends(get_cart_repository),
+    cart_product_service: CartProductService = Depends(get_cart_product_service),
+):
+    if quantity <= 0 or quantity > 100:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Quantity must be between 1 and 100"
+        )
 
     user_id = token_service.get_user(token)
-    
-     # Получаем корзину пользователя
-    cart = cart_repository.get_by_user_id(user_id)
-    
-    #меняем колличества товаров
-    try:
-        cart_product_repository.change_quantity(cart_id=cart.id, product_id=product_id, quantity=quantity)
-        return CartResponse(message="Product moved successfully", product_id=product_id)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)) from e
+    cart = cart_repo.get_by_user_id(user_id)
 
-# 4. 
+    try:
+        cart_product_service.cart_product_repo.change_quantity(
+            cart_id=cart.id, product_id=product_id, variant_id=variant_id, quantity=quantity
+        )
+        logger.info(f"Updated quantity for product {product_id}")
+        return build_cart_response(user_id, cart.id, cart_product_service)
+
+    except Exception as e:
+        logger.error(f"Failed to update product in cart: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.delete(
+    "/users/carts/items/{product_id}/", summary="Удалить товар из корзины", response_model=CartUpdateResponseSchema
+)
+def remove_from_cart(
+    product_id: int,
+    variant_id: str | None = None,
+    token: str = Depends(oauth2_scheme),
+    token_service: TokenService = Depends(get_token_service),
+    cart_repo: CartRepository = Depends(get_cart_repository),
+    cart_product_service: CartProductService = Depends(get_cart_product_service),
+):
+    user_id = token_service.get_user(token)
+    cart = cart_repo.get_by_user_id(user_id)
+
+    try:
+        cart_product_service.cart_product_repo.remove_product(
+            cart_id=cart.id, product_id=product_id, variant_id=variant_id
+        )
+        logger.info(f"Removed product {product_id} from cart")
+        cart_data = build_cart_response(user_id, cart.id, cart_product_service)
+        return CartUpdateResponseSchema(success=True, message="Товар успешно удалён из корзины", cart=cart_data)
+
+    except Exception as e:
+        logger.error(f"Failed to remove product from cart: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.get("/users/carts/", summary="Получить содержимое корзины", response_model=CartResponseSchema)
+def get_cart(
+    token: str = Depends(oauth2_scheme),
+    token_service: TokenService = Depends(get_token_service),
+    cart_repo: CartRepository = Depends(get_cart_repository),
+    cart_product_service: CartProductService = Depends(get_cart_product_service),
+):
+    user_id = token_service.get_user(token)
+    cart = cart_repo.get_by_user_id(user_id)
+    return build_cart_response(user_id, cart.id, cart_product_service)

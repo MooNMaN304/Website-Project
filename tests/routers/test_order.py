@@ -5,7 +5,7 @@ from fastapi import status
 from sqlalchemy.orm import Session 
 
 from src.models.user import UserModel
-from src.application.shemas import UserAuth
+from src.application.sсhemas import UserAuth
 from src.application.utils.token_services import TokenService
 from src.repositories import UserRepository, CartProductRepository
 from src.models import OrderModel, OrderProductModel

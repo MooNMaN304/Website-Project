@@ -1,4 +1,5 @@
-from pydantic import BaseModel, field_validator, EmailStr, constr
+from pydantic import BaseModel, EmailStr, constr, field_validator
+
 
 class UserBase(BaseModel):
     password: constr(min_length=8, max_length=200)  # Minimum 8 characters
@@ -6,9 +7,9 @@ class UserBase(BaseModel):
 
 
 class UserSchema(UserBase):
-    user_id: int
-    username: constr(min_length=3, max_length=20) 
-    
+    # user_id: int
+    username: constr(min_length=3, max_length=20)
+
     @field_validator("password")
     @classmethod
     def validate_password(cls, value):
@@ -18,8 +19,10 @@ class UserSchema(UserBase):
             raise ValueError("Password must contain at least one letter")
         return value
 
+
 class UserAuth(UserBase):
     pass
+
 
 class UserInit(BaseModel):
     token: str

@@ -1,10 +1,7 @@
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from src.models import UserModel
-
-
-class NotFoundUserException(Exception):
-    """Исключение, которое возникает, если продукт не найден"""
 
 
 class UserRepository:
@@ -28,7 +25,7 @@ class UserRepository:
             self.session.rollback()
             raise ValueError("User with this email already exists")
         return user
-    
+
     def update_password(self, user_id: int, new_password: str) -> UserModel:
         user = self.session.query(self.user_model).get(user_id)
         if not user:
@@ -37,7 +34,7 @@ class UserRepository:
         self.session.commit()
         self.session.refresh(user)
         return user
-    
+
     def delete(self, user_id: int) -> None:
         user = self.get(user_id)
         self.session.delete(user)

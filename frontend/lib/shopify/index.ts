@@ -162,7 +162,10 @@ type ExtractVariables<T> = T extends { variables: object }
   }
   
 
-const removeEdgesAndNodes = <T>(array: Connection<T>): T[] => {
+const removeEdgesAndNodes = <T>(array: Connection<T> | undefined | null): T[] => {
+  if (!array || !array.edges) {
+    return [];
+  }
   return array.edges.map((edge) => edge?.node);
 };
 
@@ -209,7 +212,7 @@ const reshapeCollections = (collections: ShopifyCollection[]) => {
   return reshapedCollections;
 };
 
-const reshapeImages = (images: Connection<Image>, productTitle: string) => {
+const reshapeImages = (images: Connection<Image> | undefined | null, productTitle: string) => {
   const flattened = removeEdgesAndNodes(images);
 
   return flattened.map((image) => {
@@ -472,14 +475,6 @@ export async function getMenu(handle: string): Promise<Menu[]> {
 
 export async function getPage(handle: string): Promise<Page> {
   if (useMockData) {
-    void postData('http://127.0.0.1:8000/api/products/?page=1', {
-      'Content-Type': 'application/json',
-      ...headers,
-    }).then(res => {
-      console.log('Backend called (debug):', res);
-    }).catch(err => {
-      console.error('Backend call failed:', err);
-    });
     return mockShopify.getPage({ handle });
   }
 
@@ -493,14 +488,6 @@ export async function getPage(handle: string): Promise<Page> {
 
 export async function getPages(): Promise<Page[]> {
   if (useMockData) {
-    void postData('http://127.0.0.1:8000/api/products/?page=1', {
-      'Content-Type': 'application/json',
-      ...headers,
-    }).then(res => {
-      console.log('Backend called (debug):', res);
-    }).catch(err => {
-      console.error('Backend call failed:', err);
-    });
     return mockShopify.getPages();
   }
 
@@ -511,32 +498,83 @@ export async function getPages(): Promise<Page[]> {
   return removeEdgesAndNodes(res.body.data.pages);
 }
 
+// _____________________________________________________________________________________
+// export async function getProduct(handle: string | undefined): Promise<Product | undefined> {
+//   'use cache';
+//   cacheTag(TAGS.products);
+//   cacheLife('days');
+
+//   if (!handle) {
+//     console.error('No product handle provided');
+//     return undefined;
+//   }
+
+//   const idMatch = handle.match(/^product-(\d+)$/);
+//   if (!idMatch) {
+//     console.error('Invalid product handle format:', handle);
+//     return undefined;
+//   }
+
+//   const productId = idMatch[1];
+
+//   try {
+//     const response = await fetch(`http://127.0.0.1:8000/api/products/${productId}`);
+//     const product = await response.json();
+//     return product;
+//   } catch (error) {
+//     console.error('Error fetching product:', error);
+//     return undefined;
+//   }
+// }
+
 export async function getProduct(handle: string): Promise<Product | undefined> {
   'use cache';
   cacheTag(TAGS.products);
   cacheLife('days');
 
+  if (handle.startsWith('product-')) {
+    const parts = handle.split('-');
+    handle = parts[1] || handle;
+  }
   if (useMockData) {
-    void postData('http://127.0.0.1:8000/api/products/?page=1', {
-      'Content-Type': 'application/json',
-      ...headers,
-    }).then(res => {
-      console.log('Backend called (debug):', res);
-    }).catch(err => {
-      console.error('Backend call failed:', err);
+    const result = await fetch(`http://0.0.0.0:8000/api/products/${handle}`, {
+      method: 'GET'
     });
-    return mockShopify.getProduct({ handle });
+    const product = await result.json();
+    return product ? reshapeBackendProduct(product) : undefined;
+    
+    // const product = await mockShopify.getProduct({ handle: `product-${handle}` });
+    // return product ? reshapeProduct(, false) : undefined;
   }
 
-  const res = await shopifyFetch<ShopifyProductOperation>({
-    query: getProductQuery,
-    variables: {
-      handle
-    }
-  });
+  // const res = await shopifyFetch<ShopifyProductOperation>({
+  //   query: getProductQuery,
+  //   variables: {
+  //     handle
+  //   }
+  // });
 
-  return reshapeProduct(res.body.data.product, false);
+  // return reshapeProduct(res.body.data.product, false);
 }
+// _____________________________________________________________________________________
+// export async function getProduct(handle: string): Promise<Product | undefined> {
+//   'use cache';
+//   cacheTag(TAGS.products);
+//   cacheLife('days'); 
+  
+//   if (useMockData) {
+//     return mockShopify.getProduct({ handle });
+//   }
+
+//   const res = await shopifyFetch<ShopifyProductOperation>({
+//     query: getProductQuery,
+//     variables: {
+//       handle
+//     }
+//   });
+
+//   return reshapeProduct(res.body.data.product, false);
+// }
 
 export async function getProductRecommendations(
   productId: string
@@ -544,6 +582,8 @@ export async function getProductRecommendations(
   'use cache';
   cacheTag(TAGS.products);
   cacheLife('days');
+
+  
 
   if (useMockData) {
     return mockShopify.getProductRecommendations({ productId });
@@ -559,6 +599,46 @@ export async function getProductRecommendations(
   return reshapeProducts(res.body.data.productRecommendations);
 }
 
+// _____________________________________________________________________________________
+// export async function getProducts({
+//   query,
+//   reverse,
+//   sortKey
+// }: {
+//   query?: string;
+//   reverse?: boolean;
+//   sortKey?: string;
+// }): Promise<Product[]> {
+//   'use cache';
+//   cacheTag(TAGS.products);
+//   cacheLife('days');
+
+//   if (useMockData) {
+//     return mockShopify.getProducts({ query, reverse, sortKey });
+//   }
+
+//   try {
+//     const url = new URL('http://127.0.0.1:8000/api/products');
+//     if (query) url.searchParams.append('query', query);
+//     if (sortKey) url.searchParams.append('sortKey', sortKey);
+//     if (reverse !== undefined) url.searchParams.append('reverse', String(reverse));
+
+//     const response = await fetch(url.toString());
+
+//     if (!response.ok) {
+//       console.error('Failed to fetch products:', response.statusText);
+//       return [];
+//     }
+
+//     const products = await response.json();
+//     return products;
+//   } catch (error) {
+//     console.error('Error fetching products:', error);
+//     return [];
+//   }
+// }
+
+// _____________________________________________________________________________________
 export async function getProducts({
   query,
   reverse,
@@ -571,16 +651,9 @@ export async function getProducts({
   'use cache';
   cacheTag(TAGS.products);
   cacheLife('days');
+  console.log('🟨 getProducts() вызвана');
 
   if (useMockData) {
-    void postData('http://127.0.0.1:8000/api/products/?page=1', {
-      'Content-Type': 'application/json',
-      ...headers,
-    }).then(res => {
-      console.log('Backend called (debug):', res);
-    }).catch(err => {
-      console.error('Backend call failed:', err);
-    });
     return mockShopify.getProducts({ query, reverse, sortKey });
   }
 
@@ -639,3 +712,47 @@ export async function revalidate(req: NextRequest): Promise<NextResponse> {
 
   return NextResponse.json({ status: 200, revalidated: true, now: Date.now() });
 }
+
+// Convert backend product data to frontend format
+const reshapeBackendProduct = (backendProduct: any): Product | undefined => {
+  if (!backendProduct) {
+    return undefined;
+  }
+
+  // Convert backend product format to frontend format
+  const product: Product = {
+    id: backendProduct.id?.toString() || '',
+    handle: backendProduct.handle || `product-${backendProduct.id}`,
+    availableForSale: backendProduct.available_for_sale ?? true,
+    title: backendProduct.title || '',
+    description: backendProduct.description || '',
+    descriptionHtml: backendProduct.description || '',
+    options: backendProduct.options || [],
+    priceRange: {
+      maxVariantPrice: {
+        amount: backendProduct.price?.toString() || '0',
+        currencyCode: 'USD'
+      },
+      minVariantPrice: {
+        amount: backendProduct.price?.toString() || '0',
+        currencyCode: 'USD'
+      }
+    },
+    variants: backendProduct.variants || [],
+    images: backendProduct.images || [],
+    featuredImage: backendProduct.featured_image || {
+      url: '',
+      altText: backendProduct.title || '',
+      width: 0,
+      height: 0
+    },
+    seo: {
+      title: backendProduct.title || '',
+      description: backendProduct.description || ''
+    },
+    tags: backendProduct.tags || [],
+    updatedAt: backendProduct.updated_at || new Date().toISOString()
+  };
+
+  return product;
+};
