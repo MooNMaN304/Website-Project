@@ -62,7 +62,7 @@ import {
 import * as mockShopify from '../mock/shopify';
 
 // Check if we should use mock data
-const useMockData = process.env.USE_MOCK_DATA === 'true';
+const useMockData = process.env.USE_MOCK_DATA === 'false';
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, 'https://')
@@ -77,17 +77,17 @@ type ExtractVariables<T> = T extends { variables: object }
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
-  
+
       for (const key in headers) {
         xhr.setRequestHeader(key, headers[key]);
       }
-  
+
       xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           const status = xhr.status;
           try {
             const body = JSON.parse(xhr.responseText);
-  
+
             if (body.errors) {
               reject(body.errors[0]);
             } else {
@@ -98,14 +98,14 @@ type ExtractVariables<T> = T extends { variables: object }
           }
         }
       };
-  
+
       xhr.send(); // You can modify this to pass a body if needed
     });
   }
-  
+
   // Usage
-  
-  
+
+
   export async function shopifyFetch<T>({
     headers,
     query,
@@ -116,10 +116,10 @@ type ExtractVariables<T> = T extends { variables: object }
     variables?: ExtractVariables<T>;
   }): Promise<{ status: number; body: T } | never> {
     // If we're using mock data, use the mock shopifyFetch
-    if (useMockData) { 
+    if (useMockData) {
       return mockShopify.shopifyFetch({ headers, query, variables });
     }
-  
+
     try {
       const result = await fetch(endpoint, {
         method: 'POST',
@@ -133,13 +133,13 @@ type ExtractVariables<T> = T extends { variables: object }
           ...(variables && { variables })
         })
       });
-  
+
       const body = await result.json();
-  
+
       if (body.errors) {
         throw body.errors[0];
       }
-  
+
       return {
         status: result.status,
         body
@@ -153,14 +153,14 @@ type ExtractVariables<T> = T extends { variables: object }
           query
         };
       }
-  
+
       throw {
         error: e,
         query
       };
     }
   }
-  
+
 
 const removeEdgesAndNodes = <T>(array: Connection<T> | undefined | null): T[] => {
   if (!array || !array.edges) {
@@ -542,7 +542,7 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
     });
     const product = await result.json();
     return product ? reshapeBackendProduct(product) : undefined;
-    
+
     // const product = await mockShopify.getProduct({ handle: `product-${handle}` });
     // return product ? reshapeProduct(, false) : undefined;
   }
@@ -560,8 +560,8 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
 // export async function getProduct(handle: string): Promise<Product | undefined> {
 //   'use cache';
 //   cacheTag(TAGS.products);
-//   cacheLife('days'); 
-  
+//   cacheLife('days');
+
 //   if (useMockData) {
 //     return mockShopify.getProduct({ handle });
 //   }
@@ -583,7 +583,7 @@ export async function getProductRecommendations(
   cacheTag(TAGS.products);
   cacheLife('days');
 
-  
+
 
   if (useMockData) {
     return mockShopify.getProductRecommendations({ productId });

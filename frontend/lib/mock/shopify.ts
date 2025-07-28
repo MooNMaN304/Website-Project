@@ -13,23 +13,23 @@ function capitalize(str) {
 }
 
 
-export async function getProducts({ query, reverse, sortKey }: { 
+export async function getProducts({ query, reverse, sortKey }: {
   query?: string;
   reverse?: boolean;
   sortKey?: string;
 }) {
   // Simple filtering based on query
   let filteredProducts = [...mockProducts];
-  
+
   if (query) {
     const lowerQuery = query.toLowerCase();
-    filteredProducts = filteredProducts.filter(product => 
-      product.title.toLowerCase().includes(lowerQuery) || 
+    filteredProducts = filteredProducts.filter(product =>
+      product.title.toLowerCase().includes(lowerQuery) ||
       product.description.toLowerCase().includes(lowerQuery) ||
       product.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
     );
   }
-  
+
   // Simple sorting logic
   if (sortKey === 'PRICE') {
     filteredProducts.sort((a, b) => {
@@ -43,12 +43,12 @@ export async function getProducts({ query, reverse, sortKey }: {
       filteredProducts.reverse();
     }
   }
-  
+
   return filteredProducts;
 }
 
 export async function getProduct({ handle }: { handle: string }) {
-  // handle is product-<id>  extracte id and make call to backend 
+  // handle is product-<id>  extracte id and make call to backend
   const product = mockProducts.find(p => p.id === handle);
   if (product) {
     console.log(`[MOCK] Found product: ${product.title}`);
@@ -95,63 +95,72 @@ export async function getCollection({ handle }: { handle: string }) {
       updatedAt: new Date().toISOString()
     };
   }
-  
+
   const collection = mockCollections.find(c => c.handle === handle);
   return collection || null;
 }
 
 
 // -----------------------------------------------------------------------------
-export async function getCollectionProducts({ 
-  collection, 
-  reverse, 
-  sortKey 
-}: { 
+export async function getCollectionProducts({
+  collection,
+  reverse,
+  sortKey
+}: {
   collection: string;
   reverse?: boolean;
   sortKey?: string;
 }) {
   try {
-    const res = await fetch(`http://localhost:8000/api/products?page=1`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    const res = await fetch(`http://localhost:8000/api/products?page=1`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal
+    });
     const data = await res.json();
-    
+
     // Преобразуем GraphQL-структуру в плоский массив продуктов
     const products = data.edges.map((edge: any) => {
       const product = edge.node;
-      
+
       // Преобразуем variants из edges/node в плоский массив
       const variants = product.variants.edges.map((v: any) => v.node);
-      
+
       // Преобразуем images из edges/node в плоский массив
       const images = product.images.edges.map((i: any) => i.node);
-      
+
       return {
         ...product,
         variants,
         images
       };
     });
-    
+
     return products;
-    
+
   } catch (error) {
     console.error('Error fetching from FastAPI:', error);
     return []; // Возвращаем пустой массив в случае ошибки
   }
 }
 // -----------------------------------------------------------------------------
-// export async function getCollectionProducts({ 
-//   collection, 
-//   reverse, 
-//   sortKey 
-// }: { 
+// export async function getCollectionProducts({
+//   collection,
+//   reverse,
+//   sortKey
+// }: {
 //   collection: string;
 //   reverse?: boolean;
 //   sortKey?: string;
 // }) {
 //   // If collection handle is provided, filter products that belong to that collection
 //   // For simplicity, we'll just return all products for any valid collection
-  
+
 //   try {
 //     const res = await fetch(`${process.env.FASTAPI_BASE_URL}/api/products?page=1`);
 
@@ -181,7 +190,7 @@ export async function getCollectionProducts({
 //   //     return true; // Return all for other collections
 //   //   });
 //   // }
-  
+
 //   // // Return all products for default collection
 //   // return mockProducts;
 // }
@@ -219,10 +228,10 @@ export async function createCart() {
 }
 // --------------------------------------------------------------------------
 
-// export async function addToCart({ 
-//   cartId, 
-//   lines 
-// }: { 
+// export async function addToCart({
+//   cartId,
+//   lines
+// }: {
 //   cartId: string;
 //   lines: { merchandiseId: string; quantity: number }[];
 // }) {
@@ -256,10 +265,10 @@ export async function addToCart({
 }
 // --------------------------------------------------------------------------
 
-// export async function removeFromCart({ 
-//   cartId, 
-//   lineIds 
-// }: { 
+// export async function removeFromCart({
+//   cartId,
+//   lineIds
+// }: {
 //   cartId: string;
 //   lineIds: string[];
 // }) {
@@ -274,6 +283,9 @@ export async function removeFromCart({
   cartId: string;
   lineIds: string[];
 }) {
+  // Extract variant ID from the lineIds string (e.g., "variant_id=variant-L-Green&quantity=0")
+  const variantId = lineIds[0].split('=')[1].split('&')[0];
+
   const res = await fetch(
     `http://localhost:8000/api/users/carts/items/${lineIds[0]}/`,
     {
@@ -292,10 +304,10 @@ function getToken() {
 }
 // --------------------------------------------------------------------------
 
-// export async function updateCart({ 
-//   cartId, 
-//   lines 
-// }: { 
+// export async function updateCart({
+//   cartId,
+//   lines
+// }: {
 //   cartId: string;
 //   lines: { id: string; merchandiseId: string; quantity: number }[];
 // }) {
@@ -315,6 +327,7 @@ function debounce(func: Function, wait: number) {
   };
 }
 
+// ...existing code...
 export async function updateCart({
   lines
 }: {
@@ -325,25 +338,26 @@ export async function updateCart({
   const id = setTimeout(() => controller.abort(), 5000);
 
   try {
-    const url = new URL(`http://localhost:8000/api/users/carts/items/${item.merchandiseId}/`);
-    url.searchParams.append('quantity', item.quantity.toString());
-    if (item.variantId) {
-      url.searchParams.append('variant_id', item.variantId);
-    }
+    const body = {
+      quantity: item.quantity,
+      ...(item.variantId && { variant_id: item.variantId })
+    };
 
-    const res = await fetch(url.toString(), {
+    const res = await fetch(`http://localhost:8000/api/users/carts/items/${item.merchandiseId}/`, {
       method: 'PUT',
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
       },
+      body: JSON.stringify(body),
       signal: controller.signal
     });
     clearTimeout(id);
-    
+
     if (!res.ok) {
       throw new Error(`Failed to update cart: ${res.status}`);
     }
-    
+
     return await res.json();
   } catch (error) {
     if (error.name === 'AbortError') {
@@ -369,11 +383,11 @@ export async function revalidate(req: Request) {
 }
 
 // Mock shopifyFetch that returns success for any operation
-export async function shopifyFetch({ 
-  query, 
-  variables, 
-  headers 
-}: { 
+export async function shopifyFetch({
+  query,
+  variables,
+  headers
+}: {
   query?: string;
   variables?: any;
   headers?: any;

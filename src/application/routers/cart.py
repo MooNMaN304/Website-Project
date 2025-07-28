@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from src.application.sсhemas import CartProductRequestSchema, CartResponseSchema, CartUpdateResponseSchema
 from src.application.utils.token_services import TokenService
@@ -95,7 +95,7 @@ def update_cart_item(
 )
 def remove_from_cart(
     product_id: int,
-    variant_id: str | None = None,
+    variant_id: str | None = Query(None),
     token: str = Depends(oauth2_scheme),
     token_service: TokenService = Depends(get_token_service),
     cart_repo: CartRepository = Depends(get_cart_repository),

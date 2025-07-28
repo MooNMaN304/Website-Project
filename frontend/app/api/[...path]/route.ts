@@ -1,10 +1,27 @@
-import { NextRequest } from 'next/server';
+// import { NextRequest } from 'next/server';
 
-export async function GET(req: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join('/');
+// export async function GET(req: NextRequest, { params }: { params: { path: string[] } }) {
+//   const path = params.path.join('/');
+//   const authHeader = req.headers.get('authorization');
+
+//   const response = await fetch(`http://localhost:8000/api/${path}/`, {
+//     headers: {
+//       'Authorization': authHeader || '',
+//     },
+//   });
+
+//   return response;
+// }
+
+
+import { NextRequest } from 'next/server'
+
+export async function GET(req: NextRequest, context: { params: { path: string[] } }) {
+  const { path } = await context.params;
+  const joinedPath = path.join('/');
   const authHeader = req.headers.get('authorization');
 
-  const response = await fetch(`http://localhost:8000/api/${path}/`, {
+  const response = await fetch(`http://localhost:8000/api/${joinedPath}/`, {
     headers: {
       'Authorization': authHeader || '',
     },
@@ -12,13 +29,16 @@ export async function GET(req: NextRequest, { params }: { params: { path: string
 
   return response;
 }
+// -------------------------------------------------------------------------------------------
+
 
 export async function POST(req: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join('/');
+  const { path } = await params;
+  const joinedPath = path.join('/');
   const authHeader = req.headers.get('authorization');
   const body = await req.json();
 
-  const response = await fetch(`http://localhost:8000/api/${path}/`, {
+  const response = await fetch(`http://localhost:8000/api/${joinedPath}/`, {
     method: 'POST',
     headers: {
       'Authorization': authHeader || '',
@@ -31,11 +51,12 @@ export async function POST(req: NextRequest, { params }: { params: { path: strin
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join('/');
+  const { path } = await params;
+  const joinedPath = path.join('/');
   const authHeader = req.headers.get('authorization');
   const body = await req.json();
 
-  const response = await fetch(`http://localhost:8000/api/${path}/`, {
+  const response = await fetch(`http://localhost:8000/api/${joinedPath}/`, {
     method: 'PUT',
     headers: {
       'Authorization': authHeader || '',
@@ -48,10 +69,11 @@ export async function PUT(req: NextRequest, { params }: { params: { path: string
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join('/');
+  const { path } = await params;
+  const joinedPath = path.join('/');
   const authHeader = req.headers.get('authorization');
 
-  const response = await fetch(`http://localhost:8000/api/${path}/`, {
+  const response = await fetch(`http://localhost:8000/api/${joinedPath}/`, {
     method: 'DELETE',
     headers: {
       'Authorization': authHeader || '',

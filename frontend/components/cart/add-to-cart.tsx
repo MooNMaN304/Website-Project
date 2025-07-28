@@ -84,7 +84,7 @@ export function AddToCart({ product }: { product: Product }) {
         try {
           // Добавляем товар в корзину через API
           const token = localStorage.getItem('authToken');
-          await fetch(`http://localhost:8000/api/users/carts/items/?quantity=1`, {
+          await fetch(`http://localhost:8000/api/users/carts/items/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -92,7 +92,8 @@ export function AddToCart({ product }: { product: Product }) {
             },
             body: JSON.stringify({
               product_id: productId,
-              variant_id: selectedVariantId
+              variant_id: selectedVariantId,
+              quantity: 1
             })
           });
 

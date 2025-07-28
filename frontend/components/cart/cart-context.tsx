@@ -14,12 +14,6 @@ import React, {
   useCallback,
   useRef
 } from 'react';
-import {
-  getCart as getLocalCart,
-  addProductToCart,
-  updateCart as updateLocalCart,
-  removeFromCart as removeFromLocalCart
-} from 'lib/cart';
 
 type UpdateType = 'plus' | 'minus' | 'delete';
 
@@ -36,40 +30,6 @@ type CartContextType = {
   clearCart: () => void;
 };
 
-// Helper function to build delete URL from cart item
-function buildDeleteUrl(cartItem: any): string | null {
-  try {
-    if (!cartItem?.merchandise?.product?.id) {
-      console.error('Invalid cart item structure for delete URL:', cartItem);
-      return null;
-    }
-
-    // Extract product ID from the backend format: "product-123" -> 123
-    const productIdMatch = cartItem.merchandise.product.id.match(/product-(\d+)/);
-    if (!productIdMatch || !productIdMatch[1]) {
-      console.error('Invalid product ID format:', cartItem.merchandise.product.id);
-      return null;
-    }
-
-    const productId = parseInt(productIdMatch[1], 10);
-    if (isNaN(productId)) {
-      console.error('Invalid product ID:', productIdMatch[1]);
-      return null;
-    }
-
-    const variant_id = cartItem.merchandise.id;
-
-    let url = `/api/users/carts/items/${productId}/`;
-    if (variant_id) {
-      url += `?variant_id=${encodeURIComponent(variant_id)}`;
-    }
-    return url;
-  } catch (error) {
-    console.error('Error building delete URL:', error);
-  }
-  return null;
-}
-
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 function debounce<T extends (...args: any[]) => any>(
@@ -77,16 +37,9 @@ function debounce<T extends (...args: any[]) => any>(
   wait: number
 ): (...args: Parameters<T>) => Promise<ReturnType<T>> {
   let timeoutId: NodeJS.Timeout | null = null;
-  let currentPromise: Promise<ReturnType<T>> | null = null;
 
   return function executedFunction(...args: Parameters<T>): Promise<ReturnType<T>> {
-    // Если уже есть активный промис, возвращаем его
-    if (currentPromise) {
-      return currentPromise;
-    }
-
-    // Создаем новый промис
-    currentPromise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
@@ -98,27 +51,18 @@ function debounce<T extends (...args: any[]) => any>(
         } catch (error) {
           reject(error);
         } finally {
-          currentPromise = null;
           timeoutId = null;
         }
       }, wait);
     });
-
-    return currentPromise;
   };
 }
 
-export function CartProvider({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export function CartProvider({ children }: { children: React.ReactNode; }) {
   const [cart, setCart] = useState<Cart | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const operationsInProgress = useRef(new Map());
-  const [authToken, setAuthToken] = useState<string | null>(null);
-  const updateQueue = useRef<Map<string, number>>(new Map());
 
   const isOperationInProgress = useCallback((key: string) => {
     return operationsInProgress.current.has(key);
@@ -132,116 +76,66 @@ export function CartProvider({
     }
   }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const newToken = token || null;
-
-    // Only update if token actually changed
-    if (newToken !== authToken) {
-      setAuthToken(newToken);
-    }
-
-    // Listen for storage changes (including from other tabs/components)
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'authToken') {
-        const newTokenFromStorage = event.newValue;
-        if (newTokenFromStorage !== authToken) {
-          setAuthToken(newTokenFromStorage);
-        }
-      }
-    };
-
-    // Listen for custom auth events
-    const handleAuthChange = () => {
-      const currentToken = localStorage.getItem('authToken');
-      if (currentToken !== authToken) {
-        setAuthToken(currentToken);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('storage', handleAuthChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('storage', handleAuthChange);
-    };
-  }, [authToken]);
-
   const initializeCart = useCallback(async () => {
     try {
       setIsLoading(true);
-      console.log('Initializing cart...');
-
       const token = localStorage.getItem('authToken');
-      if (token) {
-        const response = await fetch('/api/users/carts/', {  // Добавляем слеш в конце URL
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        });
+      if (!token) {
+        setCart(undefined);
+        return;
+      }
 
-        if (response.ok) {
-          const cartData = await response.json();
-          console.log('Loaded cart from backend:', cartData);
+      const response = await fetch('/api/users/carts/', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
 
-          // Ensure cartData has the expected structure
-          if (!cartData || !Array.isArray(cartData.items)) {
-            console.error('Invalid cart data structure:', cartData);
-            setCart(undefined);
-            return;
-          }
+      if (response.ok) {
+        const cartData = await response.json();
+        if (!cartData || !Array.isArray(cartData.items)) {
+          console.error('Invalid cart data structure:', cartData);
+          setCart(undefined);
+          return;
+        }
 
-          const totalQuantity = cartData.items.reduce((sum: number, item: any) => sum + (item?.quantity || 0), 0);
-          const totalPrice = cartData.total_price || 0;
+        const totalQuantity = cartData.items.reduce((sum: number, item: any) => sum + (item?.quantity || 0), 0);
+        const totalPrice = cartData.total_price || 0;
 
-          setCart({
-            id: 'cart-id',
-            checkoutUrl: '/checkout',
+        setCart({
+          id: 'cart-id',
+          checkoutUrl: '/checkout',
+          cost: {
+            subtotalAmount: {
+              amount: totalPrice.toString(),
+              currencyCode: 'USD'
+            },
+            totalAmount: {
+              amount: totalPrice.toString(),
+              currencyCode: 'USD'
+            },
+            totalTaxAmount: {
+              amount: '0',
+              currencyCode: 'USD'
+            }
+          },
+          lines: cartData.items.map((item: any) => ({
+            id: item.id || '',
+            quantity: item.quantity || 0,
             cost: {
-              subtotalAmount: {
-                amount: totalPrice.toString(),
-                currencyCode: 'USD'
-              },
               totalAmount: {
-                amount: totalPrice.toString(),
-                currencyCode: 'USD'
-              },
-              totalTaxAmount: {
-                amount: '0',
+                amount: (item.cost?.totalAmount?.amount || '0').toString(),
                 currencyCode: 'USD'
               }
             },
-            lines: cartData.items.map((item: any) => {
-              // The backend already returns items in the correct Shopify-like format
-              if (!item || !item.merchandise || !item.merchandise.product) {
-                console.warn('Invalid cart item:', item);
-                return null;
-              }
-
-              return {
-                id: item.id || '',
-                quantity: item.quantity || 0,
-                cost: item.cost || {
-                  totalAmount: {
-                    amount: '0',
-                    currencyCode: 'USD'
-                  }
-                },
-                merchandise: item.merchandise
-              };
-            }).filter(Boolean), // Remove any null items
-            totalQuantity
-          });
-        } else {
-          const errorText = await response.text();
-          console.error('Failed to load cart from backend:', response.status);
-          console.error('Error details:', errorText);
-          setCart(undefined);
-        }
+            merchandise: item.merchandise
+          })).filter(Boolean),
+          totalQuantity
+        });
       } else {
+        console.error('Failed to load cart:', response.status);
         setCart(undefined);
       }
     } catch (error) {
@@ -253,12 +147,17 @@ export function CartProvider({
   }, []);
 
   useEffect(() => {
-    // Re-initialize cart whenever auth token changes
     initializeCart();
-  }, [authToken, initializeCart]);
+  }, [initializeCart]);
 
-  const debouncedUpdateCart = useCallback(
-    debounce(async (merchandiseId: string, updateType: UpdateType) => {
+  const updateCartItem = useCallback(async (merchandiseId: string, updateType: UpdateType) => {
+    const operationKey = `${merchandiseId}-${updateType}`;
+    if (isOperationInProgress(operationKey)) return;
+
+    setOperationInProgress(operationKey, true);
+    let response;
+
+    try {
       if (!cart) return;
 
       const itemToUpdate = cart.lines.find(item => item.merchandise.id === merchandiseId);
@@ -267,160 +166,180 @@ export function CartProvider({
       const token = localStorage.getItem('authToken');
       if (!token) return;
 
-      try {
-        const productIdMatch = itemToUpdate.merchandise.product.id.match(/product-(\d+)/);
-        if (!productIdMatch?.[1]) return;
+      const productIdMatch = itemToUpdate.merchandise.product.id.match(/product-(\d+)/);
+      if (!productIdMatch?.[1]) return;
 
-        const productId = parseInt(productIdMatch[1], 10);
-        if (isNaN(productId)) return;
+      const productId = parseInt(productIdMatch[1], 10);
+      if (isNaN(productId)) return;
 
-        const newQuantity = updateType === 'plus' ? itemToUpdate.quantity + 1 : itemToUpdate.quantity - 1;
+      let newQuantity = updateType === 'delete' ? 0 :
+                      updateType === 'plus' ? itemToUpdate.quantity + 1 :
+                      Math.max(0, itemToUpdate.quantity - 1);
 
-        // Оптимистично обновляем UI немедленно
-        setCart(prevCart => {
-          if (!prevCart) return prevCart;
-          return {
-            ...prevCart,
-            lines: prevCart.lines.map(line => {
-              if (line.merchandise.id === merchandiseId) {
-                return {
-                  ...line,
-                  quantity: newQuantity
-                };
-              }
-              return line;
-            }).filter(line => line.quantity > 0)
-          };
+      // Защита от отрицательных значений и проверка типа
+      newQuantity = Math.max(0, parseInt(newQuantity.toString(), 10));
+
+      // Логируем значения для отладки
+      console.log('Update cart:', {
+        productId,
+        merchandiseId: itemToUpdate.merchandise.id,
+        updateType,
+        oldQuantity: itemToUpdate.quantity,
+        newQuantity
+      });
+
+      // Делаем прямой вызов API в зависимости от типа операции
+      if (newQuantity === 0) {
+        // DELETE запрос для удаления товара
+        // Используем URLSearchParams для формирования query параметров
+        const deleteParams = new URLSearchParams();
+        deleteParams.set('variant_id', itemToUpdate.merchandise.id);
+
+        const queryString = deleteParams.toString();
+        const deleteUrl = `/api/users/carts/items/${productId}?variant_id=${itemToUpdate.merchandise.id}`;
+
+        console.log('Cart DELETE operation:', {
+          url: deleteUrl,
+          method: 'DELETE',
+          productId,
+          variantId: itemToUpdate.merchandise.id,
+          queryString: queryString,
+          fullUrl: deleteUrl
         });
 
-        if (newQuantity === 0) {
-          const url = buildDeleteUrl(itemToUpdate);
-          if (url) {
-            await fetch(url, {
-              method: 'DELETE',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache'
-              },
-              credentials: 'same-origin'
-            });
-          }
-        } else {
-          await fetch(
-            `/api/users/carts/items/${productId}/?variant_id=${encodeURIComponent(itemToUpdate.merchandise.id)}&quantity=${newQuantity}`,
-            {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache'
-              },
-              credentials: 'same-origin'
-            }
-          );
+        // Используем AbortController для предотвращения дублирования запросов
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        try {
+          response = await fetch(deleteUrl, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            },
+            signal: controller.signal
+          });
+        } finally {
+          clearTimeout(timeoutId);
         }
+      } else {
+        // PUT запрос для обновления количества
+        // Используем URLSearchParams для гарантированно правильного формирования query параметров
+        const putParams = new URLSearchParams();
+        putParams.set('variant_id', itemToUpdate.merchandise.id);
+        putParams.set('quantity', newQuantity.toString());
 
-        // Задержка перед обновлением с сервера для избежания гонки состояний
-        await new Promise(resolve => setTimeout(resolve, 300));
-        await initializeCart();
-      } catch (error) {
-        console.error('Error updating cart:', error);
-        // В случае ошибки откатываем оптимистичное обновление
-        await initializeCart();
+        const putUrl = `/api/users/carts/items/${productId}?${putParams.toString()}`;
+
+        console.log('Cart PUT operation:', {
+          url: putUrl,
+          method: 'PUT',
+          productId,
+          variantId: itemToUpdate.merchandise.id,
+          quantity: newQuantity,
+          queryParams: putParams.toString()
+        });
+
+        // Используем AbortController для предотвращения дублирования запросов
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        try {
+          response = await fetch(putUrl, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            },
+            signal: controller.signal
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
       }
-    }, 500), // Увеличиваем время дебаунсинга до 500мс
-    [cart, initializeCart]
-  );
 
-  const updateCartItem = useCallback(async (merchandiseId: string, updateType: UpdateType) => {
-    const operationKey = `${merchandiseId}-${updateType}`;
+      if (!response?.ok) {
+        const errorText = await response?.text();
+        const responseDetails = {
+          status: response?.status,
+          statusText: response?.statusText,
+          headers: Object.fromEntries(response?.headers.entries() || []),
+          url: response?.url,
+          body: errorText
+        };
+        console.error('Server response error:', responseDetails);
+        throw new Error(`Failed to update cart: ${response?.status} ${errorText}`);
+      } else {
+        console.log('Server response success:', {
+          status: response?.status,
+          statusText: response?.statusText,
+          url: response?.url
+        });
+      }
 
-    if (isOperationInProgress(operationKey)) {
-      return;
-    }
-
-    try {
-      setOperationInProgress(operationKey, true);
-      await debouncedUpdateCart(merchandiseId, updateType);
+      // После успешного обновления на сервере обновляем UI
+      await initializeCart();
+    } catch (error) {
+      console.error('Error updating cart:', error);
     } finally {
-      setTimeout(() => {
-        setOperationInProgress(operationKey, false);
-      }, 300); // Добавляем задержку перед сбросом состояния операции
+      setOperationInProgress(operationKey, false);
     }
-  }, [debouncedUpdateCart, isOperationInProgress, setOperationInProgress]);
+  }, [cart, isOperationInProgress, setOperationInProgress, initializeCart]);
 
   const addCartItem = useCallback(async (variant: ProductVariant, product: Product) => {
     const operationKey = `add-${variant.id}`;
+    if (isOperationInProgress(operationKey)) return;
 
-    if (isOperationInProgress(operationKey)) {
-      console.log('Add operation already in progress:', operationKey);
-      return;
-    }
-
+    setOperationInProgress(operationKey, true);
     try {
-      setOperationInProgress(operationKey, true);
-
-      // Сначала добавляем товар локально
-      const updatedCart = await addProductToCart(variant, product);
-      setCart(updatedCart);
-
-      // Затем отправляем запрос на бэкенд
       const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          // Extract product ID from the backend format: "product-123" -> 123 or "gid://shopify/Product/123" -> 123
-          let productIdMatch = product.id.match(/product-(\d+)/);
-          if (!productIdMatch) {
-            productIdMatch = product.id.match(/Product\/(\d+)/);
-          }
-          if (!productIdMatch || !productIdMatch[1]) {
-            console.error('Invalid product ID format:', product.id);
-            return;
-          }
+      if (!token) return;
 
-          const productId = parseInt(productIdMatch[1], 10);
-          if (isNaN(productId)) {
-            console.error('Invalid product ID:', productIdMatch[1]);
-            return;
-          }
-
-          await fetch('/api/users/carts/items/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              product_id: productId,
-              variant_id: variant.id,
-              quantity: 1,
-            }),
-          });
-
-          // После успешного добавления обновляем корзину с сервера
-          await initializeCart();
-        } catch (error) {
-          console.error('Failed to add item to backend cart:', error);
-        }
+      let productIdMatch = product.id.match(/product-(\d+)/);
+      if (!productIdMatch) {
+        productIdMatch = product.id.match(/Product\/(\d+)/);
       }
+      if (!productIdMatch?.[1]) {
+        throw new Error('Invalid product ID format');
+      }
+
+      const productId = parseInt(productIdMatch[1], 10);
+      if (isNaN(productId)) {
+        throw new Error('Invalid product ID');
+      }
+
+      const response = await fetch('/api/users/carts/items/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          variant_id: variant.id,
+          quantity: 1
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to add item: ${response.status} ${errorText}`);
+      }
+
+      await initializeCart();
     } catch (error) {
       console.error('Error adding item to cart:', error);
     } finally {
       setOperationInProgress(operationKey, false);
     }
-  }, [setCart, isOperationInProgress, initializeCart]);
+  }, [isOperationInProgress, setOperationInProgress, initializeCart]);
 
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
-
-  const clearCart = useCallback(() => {
-    setCart(undefined);
-    // Also clear from localStorage if using local storage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('local_cart');
-    }
-  }, []);
+  const clearCart = useCallback(() => setCart(undefined), []);
 
   const value = useMemo(() => ({
     cart,
@@ -444,10 +363,8 @@ export function CartProvider({
 
 export function useCart() {
   const context = useContext(CartContext);
-
   if (!context) {
     throw new Error('useCart must be used within a CartProvider');
   }
-
   return context;
 }

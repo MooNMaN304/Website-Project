@@ -3,7 +3,6 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -13,14 +12,11 @@ from src.application.routers import cart_router, order_router, product_router, u
 
 app = FastAPI()
 
-# Add trusted host middleware for proxy support
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or specify domains like ["http://localhost:3000"]
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],  # Or ["GET", "POST", "OPTIONS", etc.]
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -38,6 +34,16 @@ app.include_router(cart_router, prefix="/api")
 app.include_router(order_router, prefix="/api")
 
 
+@app.get("/")
+def root():
+    return {"message": "FastAPI is running", "docs": "/docs"}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
 @app.exception_handler(Exception)
 def global_exception_handler(request: Request, exc: Exception):
     # Get the full traceback from the exception object
@@ -52,7 +58,8 @@ def global_exception_handler(request: Request, exc: Exception):
         },
     )
 
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("src.main:app", host="127.0.0.1", port=8000, reload=True)
