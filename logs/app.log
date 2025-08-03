@@ -5752,3 +5752,76 @@ connection to server at "localhost" (127.0.0.1), port 3000 failed: Connection re
 2025-07-28 23:22:22,293 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
 2025-07-28 23:23:34,608 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
 2025-07-28 23:23:34,743 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-31 19:06:32,454 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-31 19:06:32,454 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-07-31 19:06:43,347 - app - ERROR - Unhandled exception: Traceback (most recent call last):
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\starlette\concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2461, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 962, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\application\routers\user.py", line 127, in login_user
+    token = user_service.login(data.email, data.password)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\Desktop\programmer\Website Project\src\services\user.py", line 40, in login
+    raise ValueError("Некорректный e-mail!")
+ValueError: Некорректный e-mail!
+
+2025-07-31 19:07:06,075 - app - INFO - Created cart for user 1605
+2025-07-31 19:07:06,075 - app - INFO - Юзер с vasko@tobasko.ru зарегистрировался в приложении
+2025-07-31 19:07:06,285 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-07-31 19:07:08,858 - app - INFO - Получение всех заказов пользователя 1605
+2025-07-31 19:07:08,858 - app - INFO - Получение всех заказов пользователя 1605
+2025-07-31 19:07:10,893 - app - INFO - Продукт 6688 успешно получен
+2025-07-31 19:07:13,247 - app - INFO - Added product 6688 to cart 203
+2025-07-31 19:07:13,344 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:14,311 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:14,402 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:15,249 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:15,333 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:16,165 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:16,256 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:17,120 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:17,203 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-07-31 19:07:20,565 - app - INFO - Removed product 6688 from cart 203
+2025-07-31 19:07:20,639 - app - WARNING - Product 6688 not found in cart 203
