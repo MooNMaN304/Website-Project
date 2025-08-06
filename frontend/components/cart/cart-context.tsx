@@ -192,18 +192,15 @@ export function CartProvider({ children }: { children: React.ReactNode; }) {
       if (newQuantity === 0) {
         // DELETE запрос для удаления товара
         // Используем URLSearchParams для формирования query параметров
-        const deleteParams = new URLSearchParams();
-        deleteParams.set('variant_id', itemToUpdate.merchandise.id);
-
-        const queryString = deleteParams.toString();
-        const deleteUrl = `/api/users/carts/items/${productId}?variant_id=${itemToUpdate.merchandise.id}`;
+        const searchParams = new URLSearchParams();
+        searchParams.set('variant_id', itemToUpdate.merchandise.id);
+        const deleteUrl = `/api/users/carts/items/${productId}/?${searchParams.toString()}`;
 
         console.log('Cart DELETE operation:', {
           url: deleteUrl,
           method: 'DELETE',
           productId,
-          variantId: itemToUpdate.merchandise.id,
-          queryString: queryString,
+          variant_id: itemToUpdate.merchandise.id,
           fullUrl: deleteUrl
         });
 

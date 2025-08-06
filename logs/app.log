@@ -5825,3 +5825,192 @@ ValueError: Некорректный e-mail!
 2025-07-31 19:07:17,203 - app - INFO - Updated quantity for product 6688 in cart 203
 2025-07-31 19:07:20,565 - app - INFO - Removed product 6688 from cart 203
 2025-07-31 19:07:20,639 - app - WARNING - Product 6688 not found in cart 203
+2025-08-03 15:12:44,263 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:12:44,281 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:12:57,895 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-08-03 15:12:59,725 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:12:59,725 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:13:03,485 - app - INFO - Продукт 6688 успешно получен
+2025-08-03 15:13:06,542 - app - INFO - Added product 6688 to cart 203
+2025-08-03 15:13:06,640 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-08-03 15:13:07,996 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-08-03 15:13:08,088 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-08-03 15:13:09,130 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-08-03 15:13:09,210 - app - INFO - Updated quantity for product 6688 in cart 203
+2025-08-03 15:18:02,886 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:18:02,887 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:19:07,893 - app - INFO - Продукт 6688 успешно получен
+2025-08-03 15:19:08,448 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:19:08,449 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:19:14,407 - app - INFO - Пользователь vasko@tobasko.ru успешно вошёл в систему
+2025-08-03 15:19:15,236 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:19:15,376 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:19:16,637 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:19:16,637 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:19:18,063 - app - INFO - Продукт 6687 успешно получен
+2025-08-03 15:19:20,599 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:19:22,797 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:19:24,804 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:19:27,235 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:19:28,352 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:19:29,460 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:19:32,987 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:19:33,067 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:19:35,564 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:19:35,564 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:24:36,663 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:24:37,531 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:38,144 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:38,954 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:40,464 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:24:41,097 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:41,717 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:43,867 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:24:44,417 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:44,880 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:47,030 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:24:47,111 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:24:55,961 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:24:56,279 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:56,548 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:24:57,290 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:25:00,059 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:25:00,059 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:25:03,351 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:25:03,425 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:25:08,491 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:25:08,984 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:25:09,329 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:25:09,659 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:25:10,833 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:25:11,060 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:25:11,281 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:31:35,499 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:31:35,499 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:31:36,195 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:31:36,195 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:31:38,098 - app - INFO - Продукт 6687 успешно получен
+2025-08-03 15:31:43,757 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:31:43,842 - app - INFO - Removed product 6687 from cart 203
+2025-08-03 15:35:47,225 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:35:47,226 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:35:47,924 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:35:47,925 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:35:50,380 - app - INFO - Продукт 6688 успешно получен
+2025-08-03 15:36:03,447 - app - INFO - Продукт 6687 успешно получен
+2025-08-03 15:36:05,766 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:36:06,510 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:07,195 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:07,909 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:08,679 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:10,814 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:36:11,398 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:11,988 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:12,590 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:13,223 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:36:16,025 - app - INFO - Removed product 6687 from cart 203 (variants: all)
+2025-08-03 15:36:16,100 - app - WARNING - Product 6687 not found in cart 203
+2025-08-03 15:40:08,184 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:40:08,184 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:40:08,909 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:40:08,914 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:40:11,208 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:40:11,209 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:40:15,587 - app - INFO - Продукт 6689 успешно получен
+2025-08-03 15:40:20,563 - app - INFO - Продукт 6687 успешно получен
+2025-08-03 15:40:23,124 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:40:23,554 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:40:24,045 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:40:24,574 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:40:27,725 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:40:28,248 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:40:28,689 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:40:29,113 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:40:29,493 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:40:32,307 - app - INFO - Removed product 6687 from cart 203 (variants: all)
+2025-08-03 15:40:34,116 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:40:34,116 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:42:19,046 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:42:19,046 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:42:53,231 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:42:53,231 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:42:54,653 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:42:55,669 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:42:56,931 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:42:58,610 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:43:23,324 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:43:23,989 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:43:24,660 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:43:27,274 - app - INFO - Removed product 6687 from cart 203 (variants: all)
+2025-08-03 15:43:29,144 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:43:29,144 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:44:26,721 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:44:26,721 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:44:56,515 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:44:56,515 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:45:12,183 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:45:12,183 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:46:09,150 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:46:09,257 - app - INFO - Список продуктов успешно получен: страница 1, количество 10
+2025-08-03 15:46:09,900 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:46:09,900 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:46:11,859 - app - INFO - Продукт 6688 успешно получен
+2025-08-03 15:46:13,803 - app - INFO - Продукт 6687 успешно получен
+2025-08-03 15:46:17,032 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:46:17,743 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:46:18,535 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:46:19,228 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:46:23,533 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:46:24,457 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:46:25,377 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:46:28,758 - app - INFO - Removed product 6687 from cart 203 (variants: all)
+2025-08-03 15:50:52,465 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:50:52,465 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:51:10,115 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:51:11,117 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:51:12,029 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:51:16,056 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:51:18,360 - app - INFO - Removed product 6687 from cart 203 (variants: all)
+2025-08-03 15:51:20,632 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:51:20,633 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:52:11,062 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:52:11,063 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:53:05,687 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:53:05,687 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:57:39,971 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:57:39,971 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:57:41,028 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:57:41,888 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:57:42,431 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:57:44,104 - app - INFO - Added product 6687 to cart 203
+2025-08-03 15:57:44,381 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:57:44,665 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:57:44,928 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 15:57:47,859 - app - INFO - Removed product 6687 from cart 203 (variants: all)
+2025-08-03 15:57:51,006 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:57:51,007 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:58:48,796 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:58:48,797 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:59:37,189 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:59:37,189 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:59:47,103 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 15:59:47,103 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:00:06,465 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:00:06,465 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:00:13,608 - app - INFO - Added product 6687 to cart 203
+2025-08-03 16:00:14,615 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 16:00:15,578 - app - INFO - Updated quantity for product 6687 in cart 203
+2025-08-03 16:00:38,271 - app - INFO - Added product 6687 to cart 203
+2025-08-03 16:00:42,851 - app - INFO - Removed product 6687 from cart 203 (variants: all)
+2025-08-03 16:00:45,122 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:00:45,122 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,293 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,294 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,304 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,305 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,313 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,314 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,324 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,324 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,384 - app - INFO - Получение всех заказов пользователя 1605
+2025-08-03 16:02:57,390 - app - INFO - Получение всех заказов пользователя 1605

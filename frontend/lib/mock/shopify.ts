@@ -148,98 +148,8 @@ export async function getCollectionProducts({
     return []; // Возвращаем пустой массив в случае ошибки
   }
 }
-// -----------------------------------------------------------------------------
-// export async function getCollectionProducts({
-//   collection,
-//   reverse,
-//   sortKey
-// }: {
-//   collection: string;
-//   reverse?: boolean;
-//   sortKey?: string;
-// }) {
-//   // If collection handle is provided, filter products that belong to that collection
-//   // For simplicity, we'll just return all products for any valid collection
-
-//   try {
-//     const res = await fetch(`${process.env.FASTAPI_BASE_URL}/api/products?page=1`);
-
-//     // if (!res.ok) {
-//     //   throw new Error(`FastAPI fetch failed: ${res.statusText}`);
-//     // }
-
-//     const data = await res.json();
-//     return data
-//     // console.log(data)
-//     // // const transformedProducts = data.products.map((product, i) =>
-//     // //   transformProduct(product, i + 1)
-//     // // );
-//     // // console.log(transformedProducts);
-//     // return data;
-//     // return mockProducts.map((product, i
-//   } catch (error) {
-//     console.error('Error fetching from FastAPI:', error);
-//   }
 
 
-//   // if (collection && mockCollections.some(c => c.handle === collection)) {
-//   //   // Simulate products that belong to the specific collection
-//   //   return mockProducts.filter((_, index) => {
-//   //     if (collection === 'clothing') return index < 2; // First 2 products are clothing
-//   //     if (collection === 'accessories') return index >= 2; // Last product is accessory
-//   //     return true; // Return all for other collections
-//   //   });
-//   // }
-
-//   // // Return all products for default collection
-//   // return mockProducts;
-// }
-// -----------------------------------------------------------------------------
-
-export async function getMenu({ handle }: { handle: string }) {
-  // Return our mock menu regardless of the handle for simplicity
-  return mockMenu;
-}
-
-export async function getPage({ handle }: { handle: string }) {
-  if (handle === 'about') {
-    return mockPage;
-  }
-  return null;
-}
-
-export async function getPages() {
-  return [mockPage];
-}
-
-// Cart functions
-// export async function createCart() {
-//   return { ...mockCart };
-// }
-// --------------------------------------------------------------------------
-// не нужно так как корзина создается автоматически на бекенде
-export async function createCart() {
-  const res = await fetch(`http://localhost:8000/api/users/carts/`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-    },
-  });
-  return await res.json();
-}
-// --------------------------------------------------------------------------
-
-// export async function addToCart({
-//   cartId,
-//   lines
-// }: {
-//   cartId: string;
-//   lines: { merchandiseId: string; quantity: number }[];
-// }) {
-//   // In a real implementation, we would update the cart
-//   // For now, just return the mock cart
-//   return { ...mockCart };
-// }
-// --------------------------------------------------------------------------
 export async function addToCart({
   cartId, // можно игнорировать
   lines
@@ -283,11 +193,12 @@ export async function removeFromCart({
   cartId: string;
   lineIds: string[];
 }) {
-  // Extract variant ID from the lineIds string (e.g., "variant_id=variant-L-Green&quantity=0")
-  const variantId = lineIds[0].split('=')[1].split('&')[0];
+  // Extract product ID and variant ID from the lineId
+  const [productId, params] = lineIds[0].split('?');
+  const variantId = new URLSearchParams(params).get('variant_id');
 
   const res = await fetch(
-    `http://localhost:8000/api/users/carts/items/${lineIds[0]}/`,
+    `http://localhost:8000/api/users/carts/items/${productId}/?variant_id=${variantId}`,
     {
       method: 'DELETE',
       headers: {
@@ -368,8 +279,37 @@ export async function updateCart({
 }
 // --------------------------------------------------------------------------
 
+export async function createCart() {
+  const res = await fetch(`http://localhost:8000/api/users/carts/`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+    },
+  });
+  return await res.json();
+}
+
 export async function getCart({ cartId }: { cartId: string }) {
-  return { ...mockCart };
+  const res = await fetch(`http://localhost:8000/api/users/carts/`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+    },
+  });
+  return await res.json();
+}
+
+export async function getMenu({ handle }: { handle: string }) {
+  return mockMenu;
+}
+
+export async function getPage({ handle }: { handle: string }) {
+  if (handle === 'about') {
+    return mockPage;
+  }
+  return null;
+}
+
+export async function getPages() {
+  return [mockPage];
 }
 
 // This is a dummy function for API revalidation - no-op in mock mode

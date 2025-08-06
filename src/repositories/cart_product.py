@@ -47,22 +47,24 @@ class CartProductRepository:
 
     def remove_product(self, cart_id: int, product_id: int, variant_id: str | None = None) -> None:
         try:
-            query = self.session.query(CartProductModel).filter(
-                CartProductModel.cart_id == cart_id, CartProductModel.product_id == product_id
-            )
+            # Строим базовый запрос с фильтрами
+            filters = [CartProductModel.cart_id == cart_id, CartProductModel.product_id == product_id]
 
+            # Добавляем фильтр по variant_id, если он указан
             if variant_id:
-                query = query.filter(CartProductModel.variant_id == variant_id)
+                filters.append(CartProductModel.variant_id == variant_id)
 
-            cart_product = query.first()
+            # Удаляем все записи, соответствующие фильтрам
+            deleted = self.session.query(CartProductModel).filter(*filters).delete(synchronize_session=False)
 
-            if not cart_product:
+            if not deleted:
                 logger.warning(f"Product {product_id} not found in cart {cart_id}")
                 raise CartProductNotFoundException(f"Product {product_id} not found in cart")
 
-            self.session.delete(cart_product)
             self.session.commit()
-            logger.info(f"Removed product {product_id} from cart {cart_id}")
+            logger.info(
+                f"Removed product {product_id} from cart {cart_id} (variants: {variant_id if variant_id else 'all'})"
+            )
 
         except CartProductNotFoundException:
             raise

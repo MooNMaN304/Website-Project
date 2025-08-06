@@ -80,24 +80,8 @@ export function AddToCart({ product }: { product: Product }) {
   return (
     <form
       action={async () => {
-        const productId = parseInt(product.id?.split('-')[1] || '0', 10);
         try {
-          // Добавляем товар в корзину через API
-          const token = localStorage.getItem('authToken');
-          await fetch(`http://localhost:8000/api/users/carts/items/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(token ? { Authorization: `Bearer ${token}` } : {})
-            },
-            body: JSON.stringify({
-              product_id: productId,
-              variant_id: selectedVariantId,
-              quantity: 1
-            })
-          });
-
-          // После успешного добавления на бэкенде обновляем локальную корзину
+          // Используем только addCartItem, который уже делает запрос к API через shopify.ts
           addCartItem(finalVariant, product);
         } catch (error) {
           console.error('Error adding item to cart:', error);
