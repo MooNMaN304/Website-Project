@@ -17,6 +17,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - traefik
+    mem_limit: 125m
+    cpus: 0.2
 
   db:
     image: postgres:13
@@ -30,6 +32,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    mem_limit: 500m
+    cpus: 0.5
   app:
     build: .
     depends_on:
@@ -50,6 +54,8 @@ services:
     networks:
       - traefik
       - default
+    mem_limit: 256m
+    cpus: 0.5
 
   web:
     build: ./frontend
@@ -67,6 +73,8 @@ services:
       - traefik.http.services.web.loadbalancer.server.port=3000
     networks:
       - traefik
+    mem_limit: 256m
+    cpus: 0.25
 
 volumes:
   postgres_data:
