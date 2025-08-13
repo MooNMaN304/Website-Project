@@ -56,6 +56,8 @@ services:
       - default
     mem_limit: 256m
     cpus: 0.5
+    ports:
+      - "8000:8000"
 
   web:
     build: ./frontend
@@ -67,7 +69,7 @@ services:
     command: pnpm dev
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=PathPrefix(`/`)
+      - traefik.http.routers.web.rule=PathPrefix(`/frontend`)
       - traefik.http.routers.web.entrypoints=web
       - traefik.http.routers.web.priority=10
       - traefik.http.services.web.loadbalancer.server.port=3000
@@ -75,6 +77,8 @@ services:
       - traefik
     mem_limit: 256m
     cpus: 0.25
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres_data:
