@@ -18,6 +18,11 @@ services:
     networks:
       - traefik
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
 
   app:
     build:
