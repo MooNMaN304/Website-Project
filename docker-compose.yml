@@ -36,7 +36,7 @@ services:
     restart: always
     labels:
       - traefik.enable=true
-      - traefik.http.routers.app.rule=PathPrefix(`/api`)
+      - traefik.http.routers.app.rule=PathPrefix("/backend")
       - traefik.http.routers.app.entrypoints=web
       - traefik.http.routers.app.priority=10
       - traefik.http.services.app.loadbalancer.server.port=8000
