@@ -95,7 +95,7 @@ export async function createOrder(orderData: OrderRequest): Promise<OrderRespons
       if (errorData.errors) {
         const firstError = Object.values(errorData.errors)[0];
         if (firstError && Array.isArray(firstError) && firstError.length > 0) {
-          errorMessage = firstError[0];
+          errorMessage = firstError[0] || errorMessage;
         }
       }
     } catch (e) {

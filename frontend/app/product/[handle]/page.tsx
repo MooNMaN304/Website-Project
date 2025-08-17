@@ -89,14 +89,9 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
               }
             >
               <Gallery
-                images={(Array.isArray(product.images) 
-                  ? product.images.slice(0, 5)
-                  : product.images.edges 
-                    ? product.images.edges.slice(0, 5).map(edge => edge.node)
-                    : []
-                ).map((image) => ({
+                images={product.images.slice(0, 5).map((image) => ({
                   src: image.url,
-                  altText: image.altText || image.alt || ''
+                  altText: image.altText || ''
                 }))}
               />
             </Suspense>
@@ -118,7 +113,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
 async function RelatedProducts({ id }: { id: string }) {
   // const relatedProducts = await getProductRecommendations(id);
 
-  const relatedProducts = [];
+  const relatedProducts: any[] = [];
 
   if (!relatedProducts.length) return null;
 
