@@ -1,9 +1,7 @@
 import {
   HIDDEN_PRODUCT_TAG,
-  SHOPIFY_GRAPHQL_API_ENDPOINT,
   TAGS
 } from 'lib/constants';
-import { isShopifyError } from 'lib/type-guards';
 import { ensureStartsWith } from 'lib/utils';
 import {
   revalidateTag,
@@ -19,18 +17,8 @@ import {
   removeFromCartMutation
 } from './mutations/cart';
 import { getCartQuery } from './queries/cart';
-import {
-  getCollectionProductsQuery,
-  getCollectionQuery,
-  getCollectionsQuery
-} from './queries/collection';
-import { getMenuQuery } from './queries/menu';
+import { getCollectionQuery } from './queries/collection';
 import { getPageQuery, getPagesQuery } from './queries/page';
-import {
-  getProductQuery,
-  getProductRecommendationsQuery,
-  getProductsQuery
-} from './queries/product';
 import {
   Cart,
   Collection,
@@ -44,124 +32,74 @@ import {
   ShopifyCartOperation,
   ShopifyCollection,
   ShopifyCollectionOperation,
-  ShopifyCollectionProductsOperation,
-  ShopifyCollectionsOperation,
   ShopifyCreateCartOperation,
-  ShopifyMenuOperation,
   ShopifyPageOperation,
   ShopifyPagesOperation,
   ShopifyProduct,
-  ShopifyProductOperation,
-  ShopifyProductRecommendationsOperation,
-  ShopifyProductsOperation,
   ShopifyRemoveFromCartOperation,
   ShopifyUpdateCartOperation
 } from './types';
 
-// Import mock implementation
-import * as mockShopify from '../mock/shopify';
-
-// Check if we should use mock data
-const useMockData = process.env.USE_MOCK_DATA === 'true';
+// Use local backend instead of Shopify
+const LOCAL_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, 'https://')
   : '';
-const endpoint = `${domain}${SHOPIFY_GRAPHQL_API_ENDPOINT}`;
-const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
+
+const endpoint = `${LOCAL_API_BASE}/api`;
 
 type ExtractVariables<T> = T extends { variables: object }
   ? T['variables']
   : never;
-  function postData(url: string, headers: Record<string, string>): Promise<{ status: number, body: any }> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', url, true);
-  
-      for (const key in headers) {
-        xhr.setRequestHeader(key, headers[key]);
-      }
-  
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-          const status = xhr.status;
-          try {
-            const body = JSON.parse(xhr.responseText);
-  
-            if (body.errors) {
-              reject(body.errors[0]);
-            } else {
-              resolve({ status, body });
-            }
-          } catch (e) {
-            reject(e);
-          }
-        }
-      };
-  
-      xhr.send(); // You can modify this to pass a body if needed
-    });
-  }
-  
-  // Usage
-  
-  
-  export async function shopifyFetch<T>({
-    headers,
-    query,
-    variables
-  }: {
-    headers?: HeadersInit;
-    query: string;
-    variables?: ExtractVariables<T>;
-  }): Promise<{ status: number; body: T } | never> {
-    // If we're using mock data, use the mock shopifyFetch
-    if (useMockData) { 
-      return mockShopify.shopifyFetch({ headers, query, variables });
-    }
-  
-    try {
-      const result = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': key,
-          ...headers
-        },
-        body: JSON.stringify({
-          ...(query && { query }),
-          ...(variables && { variables })
-        })
-      });
-  
-      const body = await result.json();
-  
-      if (body.errors) {
-        throw body.errors[0];
-      }
-  
-      return {
-        status: result.status,
-        body
-      };
-    } catch (e) {
-      if (isShopifyError(e)) {
-        throw {
-          cause: e.cause?.toString() || 'unknown',
-          status: e.status || 500,
-          message: e.message,
-          query
-        };
-      }
-  
-      throw {
-        error: e,
-        query
-      };
-    }
-  }
-  
 
+// Function to call local backend API
+async function localApiFetch<T>(url: string, options?: RequestInit): Promise<{ status: number; body: T }> {
+  try {
+    const result = await fetch(`${LOCAL_API_BASE}${url}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+      },
+      ...options
+    });
+
+    const body = await result.json();
+
+    if (!result.ok) {
+      throw new Error(`API Error: ${result.status} ${result.statusText}`);
+    }
+
+    return {
+      status: result.status,
+      body
+    };
+  } catch (e) {
+    throw {
+      status: e instanceof Error && 'status' in e ? (e as any).status : 500,
+      message: e instanceof Error ? e.message : 'Unknown error',
+      query: url
+    };
+  }
+}
+
+export async function shopifyFetch<T>({
+  headers,
+  query,
+  variables
+}: {
+  headers?: HeadersInit;
+  query: string;
+  variables?: ExtractVariables<T>;
+}): Promise<{ status: number; body: T } | never> {
+  // For backward compatibility, return empty data structure
+  console.log('[LOCAL API MODE] GraphQL query bypassed, using local API instead');
+  return {
+    status: 200,
+    body: { data: {} } as T
+  };
+}
 const removeEdgesAndNodes = <T>(array: Connection<T> | undefined | null): T[] => {
   if (!array || !array.edges) {
     return [];
@@ -261,10 +199,6 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
 };
 
 export async function createCart(): Promise<Cart> {
-  if (useMockData) {
-    return mockShopify.createCart();
-  }
-
   const res = await shopifyFetch<ShopifyCreateCartOperation>({
     query: createCartMutation
   });
@@ -275,11 +209,6 @@ export async function createCart(): Promise<Cart> {
 export async function addToCart(
   lines: { merchandiseId: string; quantity: number }[]
 ): Promise<Cart> {
-  if (useMockData) {
-    const cartId = (await cookies()).get('cartId')?.value || 'mock-cart-id';
-    return mockShopify.addToCart({ cartId, lines });
-  }
-
   const cartId = (await cookies()).get('cartId')?.value!;
   const res = await shopifyFetch<ShopifyAddToCartOperation>({
     query: addToCartMutation,
@@ -292,11 +221,6 @@ export async function addToCart(
 }
 
 export async function removeFromCart(lineIds: string[]): Promise<Cart> {
-  if (useMockData) {
-    const cartId = (await cookies()).get('cartId')?.value || 'mock-cart-id';
-    return mockShopify.removeFromCart({ cartId, lineIds });
-  }
-
   const cartId = (await cookies()).get('cartId')?.value!;
   const res = await shopifyFetch<ShopifyRemoveFromCartOperation>({
     query: removeFromCartMutation,
@@ -312,11 +236,6 @@ export async function removeFromCart(lineIds: string[]): Promise<Cart> {
 export async function updateCart(
   lines: { id: string; merchandiseId: string; quantity: number }[]
 ): Promise<Cart> {
-  if (useMockData) {
-    const cartId = (await cookies()).get('cartId')?.value || 'mock-cart-id';
-    return mockShopify.updateCart({ cartId, lines });
-  }
-
   const cartId = (await cookies()).get('cartId')?.value!;
   const res = await shopifyFetch<ShopifyUpdateCartOperation>({
     query: editCartItemsMutation,
@@ -330,11 +249,6 @@ export async function updateCart(
 }
 
 export async function getCart(): Promise<Cart | undefined> {
-  if (useMockData) {
-    const cartId = (await cookies()).get('cartId')?.value || 'mock-cart-id';
-    return mockShopify.getCart({ cartId });
-  }
-
   const cartId = (await cookies()).get('cartId')?.value;
 
   if (!cartId) {
@@ -361,10 +275,6 @@ export async function getCollection(
   cacheTag(TAGS.collections);
   cacheLife('days');
 
-  if (useMockData) {
-    return mockShopify.getCollection({ handle });
-  }
-
   const res = await shopifyFetch<ShopifyCollectionOperation>({
     query: getCollectionQuery,
     variables: {
@@ -388,27 +298,101 @@ export async function getCollectionProducts({
   cacheTag(TAGS.collections, TAGS.products);
   cacheLife('days');
 
-  if (useMockData) {
-    return mockShopify.getCollectionProducts({ collection, reverse, sortKey });
+  // If collection is empty or 'all', get all products
+  if (!collection || collection === '' || collection === 'all') {
+    return getProducts({ reverse, sortKey });
   }
 
-  const res = await shopifyFetch<ShopifyCollectionProductsOperation>({
-    query: getCollectionProductsQuery,
-    variables: {
-      handle: collection,
-      reverse,
-      sortKey: sortKey === 'CREATED_AT' ? 'CREATED' : sortKey
-    }
-  });
+  // Map collection names to category IDs
+  // You can modify these mappings to match your actual categories
+  const categoryMap: { [key: string]: number } = {
+    'electronics': 1,
+    'clothing': 2,
+    // Add more mappings as needed
+  };
 
-  if (!res.body.data.collection) {
-    console.log(`No collection found for \`${collection}\``);
+  const categoryId = categoryMap[collection];
+  if (!categoryId) {
+    console.log(`No category ID found for collection: ${collection}`);
     return [];
   }
 
-  return reshapeProducts(
-    removeEdgesAndNodes(res.body.data.collection.products)
-  );
+  try {
+    const url = new URL(`${LOCAL_API_BASE}/api/category/${categoryId}`);
+    if (reverse !== undefined) url.searchParams.append('reverse', String(reverse));
+    if (sortKey) url.searchParams.append('sortKey', sortKey);
+
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      console.error('Failed to fetch collection products:', response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
+    const products = data.products || [];
+
+    return products.map((product: any) => ({
+      id: product.id.toString(),
+      handle: `product-${product.id}`,
+      title: product.name || 'Product',
+      description: product.description || '',
+      descriptionHtml: product.description || '',
+      updatedAt: new Date().toISOString(),
+      tags: [],
+      priceRange: {
+        maxVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        },
+        minVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      },
+      variants: [{
+        id: `variant-${product.id}`,
+        title: 'Default',
+        availableForSale: true,
+        selectedOptions: [],
+        price: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      }],
+      featuredImage: product.image_url ? {
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 300,
+        height: 300
+      } : {
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 300,
+        height: 300
+      },
+      images: product.image_url ? [{
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 300,
+        height: 300
+      }] : [{
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 300,
+        height: 300
+      }],
+      seo: {
+        title: product.name || 'Product',
+        description: product.description || ''
+      },
+      options: [],
+      availableForSale: true
+    }));
+  } catch (error) {
+    console.error('Error fetching collection products from local API:', error);
+    return [];
+  }
 }
 
 export async function getCollections(): Promise<Collection[]> {
@@ -416,14 +400,8 @@ export async function getCollections(): Promise<Collection[]> {
   cacheTag(TAGS.collections);
   cacheLife('days');
 
-  if (useMockData) {
-    return mockShopify.getCollections();
-  }
-
-  const res = await shopifyFetch<ShopifyCollectionsOperation>({
-    query: getCollectionsQuery
-  });
-  const shopifyCollections = removeEdgesAndNodes(res.body?.data?.collections);
+  // Return hardcoded categories that match your backend structure
+  // You can modify these to match your actual categories
   const collections = [
     {
       handle: '',
@@ -436,11 +414,28 @@ export async function getCollections(): Promise<Collection[]> {
       path: '/search',
       updatedAt: new Date().toISOString()
     },
-    // Filter out the `hidden` collections.
-    // Collections that start with `hidden-*` need to be hidden on the search page.
-    ...reshapeCollections(shopifyCollections).filter(
-      (collection) => !collection.handle.startsWith('hidden')
-    )
+    {
+      handle: 'electronics',
+      title: 'Electronics',
+      description: 'Electronic products',
+      seo: {
+        title: 'Electronics',
+        description: 'Electronic products'
+      },
+      path: '/search/electronics',
+      updatedAt: new Date().toISOString()
+    },
+    {
+      handle: 'clothing',
+      title: 'Clothing',
+      description: 'Clothing and apparel',
+      seo: {
+        title: 'Clothing',
+        description: 'Clothing and apparel'
+      },
+      path: '/search/clothing',
+      updatedAt: new Date().toISOString()
+    }
   ];
 
   return collections;
@@ -451,33 +446,27 @@ export async function getMenu(handle: string): Promise<Menu[]> {
   cacheTag(TAGS.collections);
   cacheLife('days');
 
-  if (useMockData) {
-    return mockShopify.getMenu({ handle });
-  }
-
-  const res = await shopifyFetch<ShopifyMenuOperation>({
-    query: getMenuQuery,
-    variables: {
-      handle
+  // Return hardcoded menu items for your local API
+  // You can modify these to match your site structure
+  const menuItems = [
+    {
+      title: 'All Products',
+      path: '/search'
+    },
+    {
+      title: 'Electronics',
+      path: '/search/electronics'
+    },
+    {
+      title: 'Clothing',
+      path: '/search/clothing'
     }
-  });
+  ];
 
-  return (
-    res.body?.data?.menu?.items.map((item: { title: string; url: string }) => ({
-      title: item.title,
-      path: item.url
-        .replace(domain, '')
-        .replace('/collections', '/search')
-        .replace('/pages', '')
-    })) || []
-  );
+  return menuItems;
 }
 
 export async function getPage(handle: string): Promise<Page> {
-  if (useMockData) {
-    return mockShopify.getPage({ handle });
-  }
-
   const res = await shopifyFetch<ShopifyPageOperation>({
     query: getPageQuery,
     variables: { handle }
@@ -487,10 +476,6 @@ export async function getPage(handle: string): Promise<Page> {
 }
 
 export async function getPages(): Promise<Page[]> {
-  if (useMockData) {
-    return mockShopify.getPages();
-  }
-
   const res = await shopifyFetch<ShopifyPagesOperation>({
     query: getPagesQuery
   });
@@ -532,36 +517,94 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
   cacheTag(TAGS.products);
   cacheLife('days');
 
-  if (handle.startsWith('product-')) {
-    const parts = handle.split('-');
-    handle = parts[1] || handle;
-  }
-  if (useMockData) {
-    const result = await fetch(`http://0.0.0.0:8000/api/products/${handle}`, {
-      method: 'GET'
-    });
-    const product = await result.json();
-    return product ? reshapeBackendProduct(product) : undefined;
-    
-    // const product = await mockShopify.getProduct({ handle: `product-${handle}` });
-    // return product ? reshapeProduct(, false) : undefined;
+  if (!handle) {
+    console.error('No product handle provided');
+    return undefined;
   }
 
-  // const res = await shopifyFetch<ShopifyProductOperation>({
-  //   query: getProductQuery,
-  //   variables: {
-  //     handle
-  //   }
-  // });
+  // Extract product ID from handle if it has the format 'product-123'
+  const idMatch = handle.match(/^product-(\d+)$/);
+  const productId = idMatch ? idMatch[1] : handle;
 
-  // return reshapeProduct(res.body.data.product, false);
+  try {
+    const response = await fetch(`${LOCAL_API_BASE}/api/products/${productId}`);
+
+    if (!response.ok) {
+      console.error('Failed to fetch product:', response.statusText);
+      return undefined;
+    }
+
+    const product = await response.json();
+
+    // Convert backend product to frontend format
+    return {
+      id: product.id.toString(),
+      handle: `product-${product.id}`,
+      title: product.name || 'Product',
+      description: product.description || '',
+      descriptionHtml: product.description || '',
+      updatedAt: new Date().toISOString(),
+      tags: [],
+      priceRange: {
+        maxVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        },
+        minVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      },
+      variants: [{
+        id: `variant-${product.id}`,
+        title: 'Default',
+        availableForSale: true,
+        selectedOptions: [],
+        price: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      }],
+      featuredImage: product.image_url ? {
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 600,
+        height: 600
+      } : {
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 600,
+        height: 600
+      },
+      images: product.image_url ? [{
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 600,
+        height: 600
+      }] : [{
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 600,
+        height: 600
+      }],
+      seo: {
+        title: product.name || 'Product',
+        description: product.description || ''
+      },
+      options: [],
+      availableForSale: true
+    };
+  } catch (error) {
+    console.error('Error fetching product from local API:', error);
+    return undefined;
+  }
 }
 // _____________________________________________________________________________________
 // export async function getProduct(handle: string): Promise<Product | undefined> {
 //   'use cache';
 //   cacheTag(TAGS.products);
-//   cacheLife('days'); 
-  
+//   cacheLife('days');
+
 //   if (useMockData) {
 //     return mockShopify.getProduct({ handle });
 //   }
@@ -583,20 +626,78 @@ export async function getProductRecommendations(
   cacheTag(TAGS.products);
   cacheLife('days');
 
-  
+  try {
+    const response = await fetch(`${LOCAL_API_BASE}/api/products/${productId}/recommendations`);
 
-  if (useMockData) {
-    return mockShopify.getProductRecommendations({ productId });
-  }
-
-  const res = await shopifyFetch<ShopifyProductRecommendationsOperation>({
-    query: getProductRecommendationsQuery,
-    variables: {
-      productId
+    if (!response.ok) {
+      console.error('Failed to fetch product recommendations:', response.statusText);
+      return [];
     }
-  });
 
-  return reshapeProducts(res.body.data.productRecommendations);
+    const data = await response.json();
+    const products = data.edges || [];
+
+    return products.map((product: any) => ({
+      id: product.id.toString(),
+      handle: `product-${product.id}`,
+      title: product.name || 'Product',
+      description: product.description || '',
+      descriptionHtml: product.description || '',
+      updatedAt: new Date().toISOString(),
+      tags: [],
+      priceRange: {
+        maxVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        },
+        minVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      },
+      variants: [{
+        id: `variant-${product.id}`,
+        title: 'Default',
+        availableForSale: true,
+        selectedOptions: [],
+        price: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      }],
+      featuredImage: product.image_url ? {
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 300,
+        height: 300
+      } : {
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 300,
+        height: 300
+      },
+      images: product.image_url ? [{
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 300,
+        height: 300
+      }] : [{
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 300,
+        height: 300
+      }],
+      seo: {
+        title: product.name || 'Product',
+        description: product.description || ''
+      },
+      options: [],
+      availableForSale: true
+    }));
+  } catch (error) {
+    console.error('Error fetching product recommendations from local API:', error);
+    return [];
+  }
 }
 
 // _____________________________________________________________________________________
@@ -651,29 +752,89 @@ export async function getProducts({
   'use cache';
   cacheTag(TAGS.products);
   cacheLife('days');
-  console.log('🟨 getProducts() вызвана');
+  console.log('🟨 getProducts() called - using local API');
 
-  if (useMockData) {
-    return mockShopify.getProducts({ query, reverse, sortKey });
-  }
+  try {
+    const url = new URL(`${LOCAL_API_BASE}/api/products`);
+    if (query) url.searchParams.append('query', query);
+    if (sortKey) url.searchParams.append('sortKey', sortKey);
+    if (reverse !== undefined) url.searchParams.append('reverse', String(reverse));
 
-  const res = await shopifyFetch<ShopifyProductsOperation>({
-    query: getProductsQuery,
-    variables: {
-      query,
-      reverse,
-      sortKey
+    const response = await fetch(url.toString());
+
+    if (!response.ok) {
+      console.error('Failed to fetch products:', response.statusText);
+      return [];
     }
-  });
 
-  return reshapeProducts(removeEdgesAndNodes(res.body.data.products));
+    const data = await response.json();
+    // Convert backend response to frontend format
+    const products = data.products || [];
+    return products.map((product: any) => ({
+      id: product.id.toString(),
+      handle: product.id.toString(),
+      title: product.name || 'Product',
+      description: product.description || '',
+      descriptionHtml: product.description || '',
+      updatedAt: new Date().toISOString(),
+      tags: [],
+      priceRange: {
+        maxVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        },
+        minVariantPrice: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      },
+      variants: [{
+        id: `variant-${product.id}`,
+        title: 'Default',
+        availableForSale: true,
+        selectedOptions: [],
+        price: {
+          amount: product.price?.toString() || '0',
+          currencyCode: 'USD'
+        }
+      }],
+      featuredImage: product.image_url ? {
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 300,
+        height: 300
+      } : {
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 300,
+        height: 300
+      },
+      images: product.image_url ? [{
+        url: `${LOCAL_API_BASE}${product.image_url}`,
+        altText: product.name || 'Product image',
+        width: 300,
+        height: 300
+      }] : [{
+        url: '/placeholder.svg',
+        altText: 'No image',
+        width: 300,
+        height: 300
+      }],
+      seo: {
+        title: product.name || 'Product',
+        description: product.description || ''
+      },
+      options: [],
+      availableForSale: true
+    }));
+  } catch (error) {
+    console.error('Error fetching products from local API:', error);
+    return [];
+  }
 }
 
 // This is called from `app/api/revalidate.ts` so providers can control revalidation logic.
 export async function revalidate(req: NextRequest): Promise<NextResponse> {
-  if (useMockData) {
-    return mockShopify.revalidate(req);
-  }
 
   // We always need to respond with a 200 status code to Shopify,
   // otherwise it will continue to retry the request.

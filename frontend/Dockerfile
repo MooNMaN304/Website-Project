@@ -18,7 +18,7 @@ COPY components ./components
 COPY fonts ./fonts
 COPY lib ./lib
 COPY public ./public
-COPY next.config.mjs next.config.ts tsconfig.json postcss.config.mjs middleware.ts ./
+COPY next.config.ts tsconfig.json postcss.config.mjs middleware.ts ./
 COPY *.md ./
 
 # --- Runner Stage ---
@@ -36,13 +36,16 @@ COPY --from=builder /app /app
 RUN ls -la /app
 
 # Set environment variables
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 ENV PORT=3000
 
     # Expose port
 EXPOSE 3000
 
-    # Run dev server
-CMD ["pnpm", "dev"]
+# Build the app
+RUN pnpm build
+
+# Start production server
+CMD ["pnpm", "start"]
 
 

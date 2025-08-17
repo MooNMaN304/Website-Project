@@ -1,6 +1,8 @@
 import { NextConfig } from 'next';
 
 const config: NextConfig = {
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '/frontend',
+  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '/frontend',
   experimental: {
     ppr: true,
     inlineCss: true,
@@ -10,7 +12,7 @@ const config: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/:path*'
+        destination: `${process.env.API_BASE_URL || 'http://app:8000'}/:path*`
       }
     ];
   },
@@ -28,9 +30,9 @@ const config: NextConfig = {
         pathname: '/**'
       },
       {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        port: '8000',
+        protocol: (process.env.API_PROTOCOL as 'https' | 'http') || 'http',
+        hostname: process.env.API_HOSTNAME || 'app',
+        port: process.env.API_PORT || '8000',
         pathname: '/products/**'
       }
     ]
