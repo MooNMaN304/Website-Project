@@ -32,7 +32,7 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - .:/app
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload --root-path /backend
     restart: always
     labels:
       - traefik.enable=true
