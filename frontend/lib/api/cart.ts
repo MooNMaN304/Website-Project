@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+import { getClientApiUrl } from '../config';
+
+const API_BASE_URL = getClientApiUrl();
 
 // Кэш для предотвращения дублирующих запросов
 let pendingRequests: { [key: string]: Promise<any> } = {};
@@ -45,7 +47,7 @@ async function makeRequest(url: string, options: RequestInit) {
 }
 
 export async function getCart(token: string) {
-  return makeRequest(`${API_BASE_URL}/users/carts/`, {
+  return makeRequest(`${API_BASE_URL}/api/users/carts/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -69,7 +71,7 @@ export async function updateCartItem(
       throw new Error('Invalid product ID');
     }
 
-    const url = new URL(`${API_BASE_URL}/users/carts/items/${numericProductId}/`);
+    const url = new URL(`${API_BASE_URL}/api/users/carts/items/${numericProductId}/`);
     url.searchParams.append('quantity', quantity.toString());
     if (variantId) {
       url.searchParams.append('variant_id', variantId);
@@ -99,7 +101,7 @@ export async function removeCartItem(
       throw new Error('Invalid product ID');
     }
 
-    const url = new URL(`${API_BASE_URL}/users/carts/items/${numericProductId}/`);
+    const url = new URL(`${API_BASE_URL}/api/users/carts/items/${numericProductId}/`);
     if (variantId) {
       url.searchParams.append('variant_id', variantId);
     }
