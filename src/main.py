@@ -1,4 +1,5 @@
 import traceback
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -10,9 +11,25 @@ from fastapi.staticfiles import StaticFiles
 
 from src.application.logger import logger
 from src.application.routers import cart_router, order_router, product_router, user_router
+from src.database import create_tables
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """Handle application lifespan events."""
+    # Startup
+    create_tables()
+    logger.info("Database tables created successfully")
+    yield
+    # Shutdown (if needed)
+
 
 app = FastAPI(
-    title="Web Site API", description="API for the web site application", version="1.0.0", root_path="/backend"
+    title="Web Site API",
+    description="API for the web site application",
+    version="1.0.0",
+    root_path="/backend",
+    lifespan=lifespan,
 )
 
 # Add trusted host middleware for proxy support
