@@ -40,8 +40,10 @@ import {
   ShopifyUpdateCartOperation
 } from './types';
 
+import { getClientApiUrl } from '../config';
+
 // Use local backend instead of Shopify
-const LOCAL_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const LOCAL_API_BASE = getClientApiUrl();
 
 const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, 'https://')

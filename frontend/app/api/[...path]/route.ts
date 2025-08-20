@@ -1,11 +1,14 @@
 import { NextRequest } from 'next/server';
+import { getServerApiUrl } from '../../../lib/config';
+
+const API_BASE_URL = getServerApiUrl();
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   const pathString = path.join('/');
   const authHeader = req.headers.get('authorization');
 
-  const response = await fetch(`http://localhost:8000/api/${pathString}/`, {
+  const response = await fetch(`${API_BASE_URL}/api/${pathString}/`, {
     headers: {
       'Authorization': authHeader || '',
     },
@@ -20,7 +23,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pat
   const authHeader = req.headers.get('authorization');
   const body = await req.json();
 
-  const response = await fetch(`http://localhost:8000/api/${pathString}/`, {
+  const response = await fetch(`${API_BASE_URL}/api/${pathString}/`, {
     method: 'POST',
     headers: {
       'Authorization': authHeader || '',
@@ -38,7 +41,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ path
   const authHeader = req.headers.get('authorization');
   const body = await req.json();
 
-  const response = await fetch(`http://localhost:8000/api/${pathString}/`, {
+  const response = await fetch(`${API_BASE_URL}/api/${pathString}/`, {
     method: 'PUT',
     headers: {
       'Authorization': authHeader || '',
@@ -55,7 +58,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ p
   const pathString = path.join('/');
   const authHeader = req.headers.get('authorization');
 
-  const response = await fetch(`http://localhost:8000/api/${pathString}/`, {
+  const response = await fetch(`${API_BASE_URL}/api/${pathString}/`, {
     method: 'DELETE',
     headers: {
       'Authorization': authHeader || '',

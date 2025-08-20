@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from 'components/auth/auth-context';
 import { useRouter } from 'next/navigation';
+import { getClientApiUrl } from '../../lib/config';
+
+const API_BASE_URL = getClientApiUrl();
 
 export default function RegisterPage() {
   const { login } = useAuth();
@@ -67,7 +70,7 @@ export default function RegisterPage() {
         formDataObj.append('password', formData.password);
 
         // Make API call with FormData
-        const response = await fetch('http://localhost:8000/api/users/', {
+        const response = await fetch(`${API_BASE_URL}/api/users/`, {
           method: 'POST',
           body: formDataObj, // Using FormData instead of JSON.stringify
         });        if (!response.ok) {
@@ -88,7 +91,7 @@ export default function RegisterPage() {
         } else {
           // If no token is returned, try to log in with the registered credentials
           try {
-            const loginResponse = await fetch('http://localhost:8000/api/users/login', {
+            const loginResponse = await fetch(`${API_BASE_URL}/api/users/login`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

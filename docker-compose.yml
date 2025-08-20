@@ -32,7 +32,7 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - .:/app
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload --root-path /backend
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     restart: always
     labels:
       - traefik.enable=true
@@ -40,8 +40,6 @@ services:
       - traefik.http.routers.app.entrypoints=web
       - traefik.http.routers.app.priority=10
       - traefik.http.services.app.loadbalancer.server.port=8000
-      - traefik.http.middlewares.app-stripprefix.stripprefix.prefixes=/backend
-      - traefik.http.routers.app.middlewares=app-stripprefix
     networks:
       - traefik
       - default
@@ -55,10 +53,8 @@ services:
 
   db:
     image: postgres:13
-    env_file:
-      - .env
     environment:
-      - POSTGRES_USER=${USER}
+      - POSTGRES_USER=${DBUSER}
       - POSTGRES_PASSWORD=${PASSWORD}
       - POSTGRES_DB=${DBNAME}
     ports:

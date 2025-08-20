@@ -2,6 +2,9 @@
 
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { getServerApiUrl } from '../../lib/config';
+
+const API_BASE_URL = getServerApiUrl();
 
 export interface CheckoutData {
   email: string;
@@ -86,7 +89,7 @@ export async function processCheckout(prevState: any, formData: FormData): Promi
     console.log('Processing checkout for:', checkoutData);
 
     try {
-      const orderResponse = await fetch('http://localhost:8000/api/users/order/', {
+      const orderResponse = await fetch(`${API_BASE_URL}/api/users/order/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
