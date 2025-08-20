@@ -2,6 +2,7 @@
 
 import { Cart, CartItem, Product, ProductVariant } from './shopify/types';
 import { updateCartItem, removeCartItem } from './api/cart';
+import { getClientApiUrl } from './config';
 
 // In-memory cart storage (will be lost on page refresh)
 let cartCache: Cart | undefined;
@@ -417,7 +418,7 @@ export async function fetchCartProductsFromApi(): Promise<CartItem[]> {
     };
 
     console.log('Fetching cart from API...');
-    const response = await fetch('http://localhost:8000/api/users/carts/', {
+    const response = await fetch(`${getClientApiUrl()}/api/users/carts/`, {
       method: 'GET',
       headers,
     });
