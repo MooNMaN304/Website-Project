@@ -2,6 +2,8 @@
  * Client-side API functions for order management
  */
 
+import { getClientApiUrl } from '../config';
+
 export interface OrderRequest {
   email: string;
   shipping_address: {
@@ -49,7 +51,7 @@ export interface ApiError {
   errors?: Record<string, string[]>;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = getClientApiUrl();
 
 /**
  * Get auth token from localStorage or cookies
