@@ -4,6 +4,9 @@ import { useAuth } from 'components/auth/auth-context';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { getClientApiUrl } from '../../lib/config';
+
+const API_BASE_URL = getClientApiUrl();
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,30 +32,30 @@ export default function LoginPage() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       setIsSubmitting(true);
       setErrors({});
-      
+
       try {
-        const response = await fetch('http://localhost:8000/api/users/login', {
+        const response = await fetch(`${API_BASE_URL}/api/users/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -83,7 +86,7 @@ export default function LoginPage() {
 
         // Используем Promise.resolve для гарантии выполнения login перед переходом
         await Promise.resolve(login(data.token));
-        
+
         // Добавляем небольшую задержку перед переходом
         setTimeout(() => {
           router.push('/');
@@ -113,7 +116,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -124,8 +127,8 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border 
-                  ${errors.email ? 'border-red-300 text-red-900 placeholder-red-300' : 'border-gray-300 placeholder-gray-500 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white'} 
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border
+                  ${errors.email ? 'border-red-300 text-red-900 placeholder-red-300' : 'border-gray-300 placeholder-gray-500 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white'}
                   rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
                 value={formData.email}
@@ -141,8 +144,8 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className={`appearance-none rounded-none relative block w-full px-3 py-2 border 
-                  ${errors.password ? 'border-red-300 text-red-900 placeholder-red-300' : 'border-gray-300 placeholder-gray-500 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white'} 
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border
+                  ${errors.password ? 'border-red-300 text-red-900 placeholder-red-300' : 'border-gray-300 placeholder-gray-500 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-white'}
                   rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={formData.password}
