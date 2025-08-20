@@ -11,7 +11,9 @@ from fastapi.staticfiles import StaticFiles
 from src.application.logger import logger
 from src.application.routers import cart_router, order_router, product_router, user_router
 
-app = FastAPI()
+app = FastAPI(
+    title="Web Site API", description="API for the web site application", version="1.0.0", root_path="/backend"
+)
 
 # Add trusted host middleware for proxy support
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
