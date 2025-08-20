@@ -3,6 +3,9 @@
  * to allow the application to run without connecting to the Shopify API.
  */
 
+import { getClientApiUrl } from '../config';
+
+const API_BASE_URL = getClientApiUrl();
 
 export async function getProducts({ query, reverse, sortKey }: {
   query?: string;
@@ -72,7 +75,7 @@ export async function getCollectionProducts({
   sortKey?: string;
 }) {
   try {
-    const res = await fetch(`http://localhost:8000/api/products?page=1`);
+    const res = await fetch(`${API_BASE_URL}/api/products?page=1`);
     const data = await res.json();
 
     // Преобразуем GraphQL-структуру в плоский массив продуктов
@@ -169,7 +172,7 @@ export async function getPages() {
 // --------------------------------------------------------------------------
 // не нужно так как корзина создается автоматически на бекенде
 export async function createCart() {
-  const res = await fetch(`http://localhost:8000/api/users/carts/`, {
+  const res = await fetch(`${API_BASE_URL}/api/users/carts/`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('authToken')}`,
     },
@@ -208,7 +211,7 @@ export async function addToCart({
     quantity: firstLine.quantity
   };
 
-  const res = await fetch(`http://localhost:8000/api/users/carts/items/`, {
+  const res = await fetch(`${API_BASE_URL}/api/users/carts/items/`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -239,7 +242,7 @@ export async function removeFromCart({
   lineIds: string[];
 }) {
   const res = await fetch(
-    `http://localhost:8000/api/users/carts/items/${lineIds[0]}/`,
+    `${API_BASE_URL}/api/users/carts/items/${lineIds[0]}/`,
     {
       method: 'DELETE',
       headers: {
@@ -277,7 +280,7 @@ export async function updateCart({
   const id = setTimeout(() => controller.abort(), 5000);
 
   try {
-    const url = new URL(`http://localhost:8000/api/users/carts/items/${item.merchandiseId}/`);
+    const url = new URL(`${API_BASE_URL}/api/users/carts/items/${item.merchandiseId}/`);
     url.searchParams.append('quantity', item.quantity.toString());
     if (item.variantId) {
       url.searchParams.append('variant_id', item.variantId);
