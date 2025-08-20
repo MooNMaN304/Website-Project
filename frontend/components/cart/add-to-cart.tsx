@@ -6,6 +6,7 @@ import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
 import { useActionState } from 'react';
 import { useCart } from './cart-context';
+import { getClientApiUrl } from '../../lib/config';
 
 function SubmitButton({
   availableForSale,
@@ -84,7 +85,7 @@ export function AddToCart({ product }: { product: Product }) {
         try {
           // Добавляем товар в корзину через API
           const token = localStorage.getItem('authToken');
-          await fetch(`http://localhost:8000/api/users/carts/items/?quantity=1`, {
+          await fetch(`${getClientApiUrl()}/api/users/carts/items/?quantity=1`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
