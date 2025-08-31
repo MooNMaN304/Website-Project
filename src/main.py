@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from src.application.logger import logger
 from src.application.routers import cart_router, order_router, product_router, user_router
+from src.config import SETTINGS
 from src.database import create_tables
 
 
@@ -20,6 +21,7 @@ async def lifespan(_: FastAPI):
     # Startup
     create_tables()
     logger.info("Database tables created successfully")
+    logger.info(f"Application starting in {SETTINGS.environment} mode")
     yield
     # Shutdown (if needed)
 
@@ -28,18 +30,38 @@ app = FastAPI(
     title="Web Site API",
     description="API for the web site application",
     version="1.0.0",
-    root_path="/backend",
     lifespan=lifespan,
+    docs_url="/docs" if not SETTINGS.is_production else "/api/docs",
+    redoc_url="/redoc" if not SETTINGS.is_production else "/api/redoc",
+    openapi_url="/openapi.json" if not SETTINGS.is_production else "/api/openapi.json",
 )
 
 # Add trusted host middleware for proxy support
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
+# Configure CORS based on environment
+allowed_origins = [
+    "http://localhost:3000",  # Development frontend
+    "http://localhost:8000",  # Backend (for self-requests)
+]
+
+if SETTINGS.is_production:
+    # Production: more restrictive CORS
+    allowed_origins.extend(
+        [
+            "http://web:3000",  # Production frontend service
+            "http://app:8000",  # Production backend service
+        ]
+    )
+else:
+    # Development: allow all origins
+    allowed_origins.append("*")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or specify domains like ["http://localhost:3000"]
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Or ["GET", "POST", "OPTIONS", etc.]
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
