@@ -1,23 +1,21 @@
 import { NextConfig } from 'next';
+import path from 'path';
+import { config as dotenvConfig } from 'dotenv';
+
+// Load environment variables from root directory
+dotenvConfig({ path: path.resolve(__dirname, '../.env.local') });
+dotenvConfig({ path: path.resolve(__dirname, '../.env') });
 
 const config: NextConfig = {
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '/frontend',
-  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '/frontend',
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
+  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '',
   experimental: {
-    ppr: true,
-    inlineCss: true,
-    useCache: true
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.API_BASE_URL || 'http://app:8000'}/:path*`
-      }
-    ];
+    // Removed ppr and useCache to prevent SSR
+    inlineCss: true
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    unoptimized: true, // Disable optimization for both development and production
     remotePatterns: [
       {
         protocol: 'https',
@@ -31,7 +29,7 @@ const config: NextConfig = {
       },
       {
         protocol: (process.env.API_PROTOCOL as 'https' | 'http') || 'http',
-        hostname: process.env.API_HOSTNAME || 'app',
+        hostname: process.env.API_HOSTNAME || 'localhost',
         port: process.env.API_PORT || '8000',
         pathname: '/products/**'
       }
