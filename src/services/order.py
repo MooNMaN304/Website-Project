@@ -1,9 +1,9 @@
+from src.application.logger import logger
+from src.exceptions.order_exceptions import CartIsEmpty, OrderNotFoundException
 from src.models import OrderModel
 from src.repositories.cart import CartRepository
 from src.repositories.order import OrderRepository
 from src.repositories.order_product import OrderProductRepository
-from src.exceptions.order_exceptions import CartIsEmpty, OrderNotFoundException
-from src.application.logger import logger
 
 
 class OrderService:
@@ -17,7 +17,13 @@ class OrderService:
         self.order_product = order_product_repository
         self.cart_repository = cart_repository
 
-    def create(self, user_id: int) -> OrderModel:
+    def create(
+        self,
+        user_id: int,
+        email: str | None = None,
+        shipping_address: dict | None = None,
+        payment_method: str | None = None,
+    ) -> OrderModel:
         logger.info(f"Создание заказа для пользователя {user_id}")
         cart = self.cart_repository.get_by_user_id(user_id)
 
@@ -25,7 +31,9 @@ class OrderService:
             logger.warning(f"Корзина пользователя {user_id} пуста — заказ не создан")
             raise CartIsEmpty()
 
-        order = self.order_repository.create_order(user_id)
+        order = self.order_repository.create_order(
+            user_id=user_id, email=email, shipping_address=shipping_address, payment_method=payment_method
+        )
         logger.info(f"Создан заказ с ID {order.id} для пользователя {user_id}")
 
         for product in cart.cart_product_rel:

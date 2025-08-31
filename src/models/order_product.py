@@ -1,4 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm import relationship
 
 from .base import AbstractBase
 
@@ -8,6 +9,9 @@ class OrderProductModel(AbstractBase):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, default=1)  # Добавим количество товаров
+
+    # Добавляем связь с продуктом
+    product = relationship("ProductModel")
 
     def __repr__(self):
         return (

@@ -19,6 +19,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 def create_order(
+    order_request: dict,  # Accept order data with shipping and payment info
     token: str = Depends(oauth2_scheme),
     token_service: TokenService = Depends(get_token_service),
     order_service: OrderService = Depends(get_order_services),
@@ -27,7 +28,14 @@ def create_order(
     logger.info(f"Попытка создать заказ для пользователя {user_id}")
 
     try:
-        created_order = order_service.create(user_id)
+        # Extract shipping and payment information from request
+        email = order_request.get("email")
+        shipping_address = order_request.get("shipping_address")
+        payment_method = order_request.get("payment_method")
+
+        created_order = order_service.create(
+            user_id=user_id, email=email, shipping_address=shipping_address, payment_method=payment_method
+        )
         return OrderSchema.from_orm(created_order)
     except CartIsEmpty as e:
         logger.warning(f"Ошибка создания заказа для пользователя {user_id}: {e}")

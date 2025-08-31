@@ -27,16 +27,41 @@ def get_product(product_id: int, product_adpater: ProductAdapter = Depends(get_p
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
-@router.get("/products", summary="Получить список продуктов", response_model=ProductListResponseSchema)
+@router.get("/products", summary="Получить список продуктов")
 def get_products(
     page: int = Query(1, gt=0),
     count: int = Query(10, gt=0, le=100),
-    product_adpater: ProductAdapter = Depends(get_product_adapter),
+    product_repo: ProductRepository = Depends(get_product_repository),
 ):
     try:
-        result = product_adpater.get_products(page=page, count=count)
+        # Return simple format that frontend expects
+        products = product_repo.get_all(page=page, count=count)
+        simple_products = []
+
+        for product in products:
+            # Extract price from price_range JSON field
+            price = 0.0
+            if hasattr(product, "price_range") and product.price_range:
+                if isinstance(product.price_range, dict):
+                    min_price = product.price_range.get("minVariantPrice", {})
+                    if isinstance(min_price, dict) and "amount" in min_price:
+                        try:
+                            price = float(min_price["amount"])
+                        except (ValueError, TypeError):
+                            price = 0.0
+
+            simple_products.append(
+                {
+                    "id": product.id,
+                    "name": product.title,
+                    "price": price,
+                    "description": product.description or "",
+                    "image_url": product.featured_image.get("url") if product.featured_image else None,
+                }
+            )
+
         logger.info(f"Список продуктов успешно получен: страница {page}, количество {count}")
-        return result
+        return {"products": simple_products}
     except ProductListException as e:
         logger.warning(f"Ошибка получения списка продуктов: {e}")
         raise HTTPException(status_code=400, detail=str(e))
@@ -52,7 +77,6 @@ def get_products_by_category(
     product_repo: ProductRepository = Depends(get_product_repository),
     review_repo: ReviewRepository = Depends(get_review_repository),
 ):
-
     products = product_repo.get_by_category(category_id, page, count)
     products_with_rating = [
         {**product.__dict__, "rating": review_repo.calculate_rating(product.id)} for product in products
