@@ -180,19 +180,6 @@ export async function createCart() {
   return await res.json();
 }
 // --------------------------------------------------------------------------
-
-// export async function addToCart({
-//   cartId,
-//   lines
-// }: {
-//   cartId: string;
-//   lines: { merchandiseId: string; quantity: number }[];
-// }) {
-//   // In a real implementation, we would update the cart
-//   // For now, just return the mock cart
-//   return { ...mockCart };
-// }
-// --------------------------------------------------------------------------
 export async function addToCart({
   cartId, // можно игнорировать
   lines

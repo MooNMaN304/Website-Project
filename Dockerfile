@@ -8,9 +8,11 @@ WORKDIR /app
 
 # Copy dependencies file
 COPY requirements.txt .
+COPY pyproject.toml .
 
-# Install Python dependencies
+# Install Python dependencies including dev dependencies for testing
 RUN pip install -r requirements.txt
+RUN pip install pytest
 
 # Copy application files
 COPY . .

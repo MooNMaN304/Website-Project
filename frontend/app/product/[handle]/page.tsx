@@ -1,66 +1,89 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
 import { GridTileImage } from 'components/grid/tile';
-import Footer from 'components/layout/footer';
 import { Gallery } from 'components/product/gallery';
 import { ProductProvider } from 'components/product/product-context';
 import { ProductDescription } from 'components/product/product-description';
-import { HIDDEN_PRODUCT_TAG } from 'lib/constants';
-import { getProduct, getProductRecommendations } from 'lib/shopify';
-import { Image } from 'lib/shopify/types';
+import { fetchProduct } from 'lib/api/products';
+import { Product, Image } from 'lib/shopify/types';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-export async function generateMetadata(props: {
-  params: Promise<{ handle: string }>;
-}): Promise<Metadata> {
-  const params = await props.params;
-  const product = await getProduct(params.handle);
+export default function ProductPage() {
+  const params = useParams();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!product) return notFound();
+  const handle = params?.handle as string;
 
-  const { url, width, height, altText: alt } = product.featuredImage || {};
-  const indexable = !product.tags.includes(HIDDEN_PRODUCT_TAG);
+  useEffect(() => {
+    const loadProduct = async () => {
+      if (!handle) return;
 
-  return {
-    title: product.seo.title || product.title,
-    description: product.seo.description || product.description,
-    robots: {
-      index: indexable,
-      follow: indexable,
-      googleBot: {
-        index: indexable,
-        follow: indexable
-      }
-    },
-    openGraph: url
-      ? {
-          images: [
-            {
-              url,
-              width,
-              height,
-              alt
-            }
-          ]
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Extract product ID from handle if it has the format 'product-123'
+        const idMatch = handle.match(/^product-(\d+)$/);
+        const productId = idMatch ? idMatch[1] : handle;
+
+        if (!productId) {
+          setError('Invalid product handle');
+          return;
         }
-      : null
-  };
-}
 
-export default async function ProductPage(props: { params: Promise<{ handle: string }> }) {
-  const params = await props.params;
-  const product = await getProduct(params.handle);
+        const fetchedProduct = await fetchProduct(productId);
 
-  if (!product) return notFound();
+        if (!fetchedProduct) {
+          setError('Product not found');
+          return;
+        }
+
+        setProduct(fetchedProduct);
+      } catch (err) {
+        console.error('Error fetching product:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch product');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
+  }, [handle]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="text-lg">Loading product...</div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="text-red-500 text-center py-8">
+        <p>Error: {error || 'Product not found'}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.description,
-    image: product.featuredImage.url,
+    image: product.featuredImage?.url,
     offers: {
       '@type': 'AggregateOffer',
       availability: product.availableForSale
@@ -89,7 +112,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
               }
             >
               <Gallery
-                images={product.images.slice(0, 5).map((image) => ({
+                images={(product.images || []).slice(0, 5).map((image: Image) => ({
                   src: image.url,
                   altText: image.altText || ''
                 }))}
@@ -105,15 +128,42 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
         </div>
         <RelatedProducts id={product.id} />
       </div>
-      <Footer />
     </ProductProvider>
   );
 }
 
-async function RelatedProducts({ id }: { id: string }) {
-  // const relatedProducts = await getProductRecommendations(id);
+function RelatedProducts({ id }: { id: string }) {
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const relatedProducts: any[] = [];
+  useEffect(() => {
+    const loadRelatedProducts = async () => {
+      setLoading(true);
+      try {
+        // For now, we'll just return an empty array since getProductRecommendations is commented out
+        // You can implement this later when you have the API endpoint
+        setRelatedProducts([]);
+      } catch (error) {
+        console.error('Error fetching related products:', error);
+        setRelatedProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      loadRelatedProducts();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="py-8">
+        <h2 className="mb-4 text-2xl font-bold">Related Products</h2>
+        <div className="text-center">Loading related products...</div>
+      </div>
+    );
+  }
 
   if (!relatedProducts.length) return null;
 

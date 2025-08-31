@@ -4,7 +4,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
-import { useActionState } from 'react';
+import type { components } from 'lib/api/types';
 import { useCart } from './cart-context';
 import { getClientApiUrl } from '../../lib/config';
 
@@ -59,7 +59,7 @@ function SubmitButton({
 
 export function AddToCart({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
-  const { addCartItem } = useCart();
+  const { initializeCart } = useCart();
   const { state } = useProduct();
 
   // Handle both array of variants and GraphQL edges/nodes structure
@@ -74,9 +74,6 @@ export function AddToCart({ product }: { product: Product }) {
   );
   const defaultVariantId = variantsArray.length === 1 ? variantsArray[0]?.id : undefined;
   const selectedVariantId = variant?.id || defaultVariantId;
-  const finalVariant = variantsArray.find(
-    (variant: ProductVariant) => variant.id === selectedVariantId
-  )!;
 
   return (
     <form
@@ -85,20 +82,31 @@ export function AddToCart({ product }: { product: Product }) {
         try {
           // Добавляем товар в корзину через API
           const token = localStorage.getItem('authToken');
-          await fetch(`${getClientApiUrl()}/api/users/carts/items/?quantity=1`, {
+
+          const requestBody: components['schemas']['CartProductRequestSchema'] = {
+            product_id: productId,
+            variant_id: selectedVariantId || null,
+            quantity: 1
+          };
+
+          const response = await fetch(`${getClientApiUrl()}/api/users/carts/items/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               ...(token ? { Authorization: `Bearer ${token}` } : {})
             },
-            body: JSON.stringify({
-              product_id: productId,
-              variant_id: selectedVariantId
-            })
+            body: JSON.stringify(requestBody)
           });
 
+          if (!response.ok) {
+            throw new Error(`Failed to add to cart: ${response.status}`);
+          }
+
+          await response.json();
+
           // После успешного добавления на бэкенде обновляем локальную корзину
-          addCartItem(finalVariant, product);
+          // Используем initializeCart вместо addCartItem чтобы избежать дублирования API вызовов
+          await initializeCart();
         } catch (error) {
           console.error('Error adding item to cart:', error);
         }

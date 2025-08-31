@@ -1,30 +1,59 @@
-from sqlalchemy.orm import Session
-from typing import List, Optional
-from src.models import OrderModel
+from sqlalchemy.orm import Session, joinedload
+
+from src.models import OrderModel, OrderProductModel
+
 
 class OrderRepository:
     def __init__(self, order_model: OrderModel, session: Session):
         self.order_model = order_model
         self.session = session
 
-    def create_order(self, user_id: int) -> OrderModel:
-        """Создает новый заказ"""
-        order = self.order_model(user_id=user_id, payment=False)
+    def create_order(
+        self,
+        user_id: int,
+        email: str | None = None,
+        shipping_address: dict | None = None,
+        payment_method: str | None = None,
+    ) -> OrderModel:
+        """Создает новый заказ."""
+        order = self.order_model(
+            user_id=user_id,
+            payment=False,
+            email=email,
+            shipping_address=shipping_address,
+            payment_method=payment_method,
+        )
         self.session.add(order)
         self.session.commit()
         self.session.refresh(order)
         return order
 
-    def get_order(self, order_id: int) -> Optional[OrderModel]:
-        """Получает заказ по ID"""
-        return self.session.query(self.order_model).filter(self.order_model.id == order_id).first()
+    def get_order(self, order_id: int) -> OrderModel | None:
+        """Получает заказ по ID с продуктами."""
+        return (
+            self.session.query(self.order_model)
+            .options(
+                joinedload(self.order_model.order_products).joinedload(OrderProductModel.product),
+                joinedload(self.order_model.user),
+            )
+            .filter(self.order_model.id == order_id)
+            .first()
+        )
 
-    def get_user_orders(self, user_id: int) -> List[OrderModel]:
-        """Получает все заказы пользователя"""
-        return self.session.query(self.order_model).filter(self.order_model.user_id == user_id).all()
+    def get_user_orders(self, user_id: int) -> list[OrderModel]:
+        """Получает все заказы пользователя с продуктами."""
+        return (
+            self.session.query(self.order_model)
+            .options(
+                joinedload(self.order_model.order_products).joinedload(OrderProductModel.product),
+                joinedload(self.order_model.user),
+            )
+            .filter(self.order_model.user_id == user_id)
+            .all()
+        )
 
-    def complete_order(self, order_id: int) -> Optional[OrderModel]:
-        """Завершает заказ (помечает как оплаченный)"""
+    def complete_order(self, order_id: int) -> OrderModel | None:
+        """Завершает заказ (помечает как оплаченный)."""
         order = self.get_order(order_id)
         if order:
             order.payment = True

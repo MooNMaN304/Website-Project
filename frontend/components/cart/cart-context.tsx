@@ -4,7 +4,8 @@ import type {
   Cart,
   Product,
   ProductVariant
-} from 'lib/shopify/types';
+} from 'lib/types';
+import type { components } from 'lib/api/types';
 import React, {
   createContext,
   useContext,
@@ -14,12 +15,59 @@ import React, {
   useCallback,
   useRef
 } from 'react';
-import {
-  getCart as getLocalCart,
-  addProductToCart,
-  updateCart as updateLocalCart,
-  removeFromCart as removeFromLocalCart
-} from 'lib/cart';
+import { getClientApiUrl } from 'lib/config';
+
+// Local storage key for cart
+const LOCAL_STORAGE_CART_KEY = 'local_cart';
+
+// Generate a unique cart ID
+function generateCartId(): string {
+  return `cart_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+}
+
+// Generate a unique line ID
+function generateLineId(): string {
+  return `line_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+}
+
+// Function to create an empty cart structure
+function createEmptyCart(): Cart {
+  return {
+    id: generateCartId(),
+    checkoutUrl: '/checkout',
+    totalQuantity: 0,
+    lines: [],
+    cost: {
+      subtotalAmount: { amount: '0', currencyCode: 'USD' },
+      totalAmount: { amount: '0', currencyCode: 'USD' },
+      totalTaxAmount: { amount: '0', currencyCode: 'USD' }
+    }
+  };
+}
+
+// Helper to calculate item cost
+function calculateItemCost(quantity: number, price: string): string {
+  return (Number(price) * quantity).toString();
+}
+
+// Calculate cart totals
+function updateCartTotals(lines: any[]): Pick<Cart, 'totalQuantity' | 'cost'> {
+  const totalQuantity = lines.reduce((sum, item) => sum + item.quantity, 0);
+  const totalAmount = lines.reduce(
+    (sum, item) => sum + Number(item.cost.totalAmount.amount),
+    0
+  );
+  const currencyCode = lines[0]?.cost.totalAmount.currencyCode ?? 'USD';
+
+  return {
+    totalQuantity,
+    cost: {
+      subtotalAmount: { amount: totalAmount.toString(), currencyCode },
+      totalAmount: { amount: totalAmount.toString(), currencyCode },
+      totalTaxAmount: { amount: '0', currencyCode }
+    }
+  };
+}
 
 type UpdateType = 'plus' | 'minus' | 'delete';
 
@@ -59,7 +107,7 @@ function buildDeleteUrl(cartItem: any): string | null {
 
     const variant_id = cartItem.merchandise.id;
 
-    let url = `/api/users/carts/items/${productId}/`;
+    let url = `${getClientApiUrl()}/api/users/carts/items/${productId}/`;
     if (variant_id) {
       url += `?variant_id=${encodeURIComponent(variant_id)}`;
     }
@@ -175,7 +223,7 @@ export function CartProvider({
 
       const token = localStorage.getItem('authToken');
       if (token) {
-        const response = await fetch('/api/users/carts/', {  // Добавляем слеш в конце URL
+        const response = await fetch(`${getClientApiUrl()}/api/users/carts/`, {  // Direct backend call
           headers: {
             'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-cache',
@@ -184,7 +232,7 @@ export function CartProvider({
         });
 
         if (response.ok) {
-          const cartData = await response.json();
+          const cartData: components['schemas']['CartResponseSchema'] = await response.json();
           console.log('Loaded cart from backend:', cartData);
 
           // Ensure cartData has the expected structure
@@ -214,17 +262,18 @@ export function CartProvider({
                 currencyCode: 'USD'
               }
             },
-            lines: cartData.items.map((item: any) => {
-              // The backend already returns items in the correct Shopify-like format
-              if (!item || !item.merchandise || !item.merchandise.product) {
-                console.warn('Invalid cart item:', item);
-                return null;
-              }
+            lines: cartData.items
+              .map((item: any) => {
+                // The backend already returns items in the correct Shopify-like format
+                if (!item || !item.merchandise || !item.merchandise.product) {
+                  console.warn('Invalid cart item:', item);
+                  return null;
+                }
 
-              return {
-                id: item.id || '',
-                quantity: item.quantity || 0,
-                cost: item.cost || {
+                return {
+                  id: item.id || '',
+                  quantity: item.quantity || 0,
+                  cost: item.cost || {
                   totalAmount: {
                     amount: '0',
                     currencyCode: 'USD'
@@ -232,7 +281,7 @@ export function CartProvider({
                 },
                 merchandise: item.merchandise
               };
-            }).filter(Boolean), // Remove any null items
+            }).filter((item): item is NonNullable<typeof item> => item !== null), // Remove any null items with proper type guard
             totalQuantity
           });
         } else {
@@ -274,7 +323,11 @@ export function CartProvider({
         const productId = parseInt(productIdMatch[1], 10);
         if (isNaN(productId)) return;
 
-        const newQuantity = updateType === 'plus' ? itemToUpdate.quantity + 1 : itemToUpdate.quantity - 1;
+        const newQuantity = updateType === 'plus'
+          ? itemToUpdate.quantity + 1
+          : updateType === 'delete'
+            ? 0
+            : itemToUpdate.quantity - 1;
 
         // Оптимистично обновляем UI немедленно
         setCart(prevCart => {
@@ -308,7 +361,7 @@ export function CartProvider({
           }
         } else {
           await fetch(
-            `/api/users/carts/items/${productId}/?variant_id=${encodeURIComponent(itemToUpdate.merchandise.id)}&quantity=${newQuantity}`,
+            `${getClientApiUrl()}/api/users/carts/items/${productId}/?variant_id=${encodeURIComponent(itemToUpdate.merchandise.id)}&quantity=${newQuantity}`,
             {
               method: 'PUT',
               headers: {
@@ -361,11 +414,62 @@ export function CartProvider({
     try {
       setOperationInProgress(operationKey, true);
 
-      // Сначала добавляем товар локально
-      const updatedCart = await addProductToCart(variant, product);
-      setCart(updatedCart);
+      // Create cart item locally
+      const newCartItem = {
+        id: generateLineId(),
+        quantity: 1,
+        cost: {
+          totalAmount: variant.price
+        },
+        merchandise: {
+          id: variant.id,
+          title: variant.title,
+          selectedOptions: variant.selectedOptions,
+          product: product
+        }
+      };
 
-      // Затем отправляем запрос на бэкенд
+      // Update cart locally first
+      setCart(prevCart => {
+        const currentCart = prevCart || createEmptyCart();
+        const existingItemIndex = currentCart.lines.findIndex(
+          item => item.merchandise.id === variant.id
+        );
+
+        let newLines;
+        if (existingItemIndex >= 0) {
+          // Update existing item
+          newLines = [...currentCart.lines];
+          const existingItem = newLines[existingItemIndex];
+          if (existingItem) {
+            newLines[existingItemIndex] = {
+              ...existingItem,
+              quantity: existingItem.quantity + 1,
+              cost: {
+                totalAmount: {
+                  amount: calculateItemCost(
+                    existingItem.quantity + 1,
+                    variant.price.amount
+                  ),
+                  currencyCode: variant.price.currencyCode
+                }
+              }
+            };
+          }
+        } else {
+          // Add new item
+          newLines = [...currentCart.lines, newCartItem];
+        }
+
+        const totals = updateCartTotals(newLines);
+        return {
+          ...currentCart,
+          lines: newLines,
+          ...totals
+        };
+      });
+
+      // Send request to backend
       const token = localStorage.getItem('authToken');
       if (token) {
         try {
@@ -385,17 +489,19 @@ export function CartProvider({
             return;
           }
 
-          await fetch('/api/users/carts/items/', {
+          const requestBody: components['schemas']['CartProductRequestSchema'] = {
+            product_id: productId,
+            variant_id: variant.id,
+            quantity: 1,
+          };
+
+          await fetch(`${getClientApiUrl()}/api/users/carts/items/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify({
-              product_id: productId,
-              variant_id: variant.id,
-              quantity: 1,
-            }),
+            body: JSON.stringify(requestBody),
           });
 
           // После успешного добавления обновляем корзину с сервера
@@ -409,7 +515,7 @@ export function CartProvider({
     } finally {
       setOperationInProgress(operationKey, false);
     }
-  }, [setCart, isOperationInProgress, initializeCart]);
+  }, [setCart, isOperationInProgress, setOperationInProgress, initializeCart]);
 
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);

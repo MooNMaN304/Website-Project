@@ -1,11 +1,43 @@
+'use client';
+
 import clsx from 'clsx';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { getCollections } from 'lib/shopify';
+import type { Collection } from 'lib/shopify/types';
 import FilterList from './filter';
 
-async function CollectionList() {
-  const collections = await getCollections();
+function CollectionList() {
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const data = await getCollections();
+        setCollections(data);
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+        setCollections([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="mt-3">
+        <div className={clsx(skeleton, activeAndTitles)} />
+        <div className={clsx(skeleton, items)} />
+        <div className={clsx(skeleton, items)} />
+        <div className={clsx(skeleton, items)} />
+      </div>
+    );
+  }
+
   return <FilterList list={collections} title="Collections" />;
 }
 

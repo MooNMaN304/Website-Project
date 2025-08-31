@@ -9,7 +9,14 @@ export const getServerApiUrl = () => {
 
 // Client-side API URL (for browser requests)
 export const getClientApiUrl = () => {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  // In production, use relative URL if NEXT_PUBLIC_API_URL is not set
+  // This allows Traefik to route API requests to the correct backend service
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) {
+    // Use relative URL in production, localhost in development
+    return process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000';
+  }
+  return apiUrl;
 };
 
 // Determine the appropriate API URL based on environment (SSR vs CSR)

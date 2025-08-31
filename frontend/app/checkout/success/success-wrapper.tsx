@@ -98,7 +98,7 @@ export default function SuccessWrapper() {
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 <span className="font-medium">Created:</span>{' '}
-                {new Date(order.created_at).toLocaleDateString()}
+                {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}
               </p>
             </div>
 
@@ -108,7 +108,7 @@ export default function SuccessWrapper() {
                   Items Ordered
                 </h3>
                 <div className="mt-4 space-y-4">
-                  {order.items.map((item, index) => (
+                  {order.items.map((item: any, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between border-b border-gray-200 pb-4 dark:border-gray-700"

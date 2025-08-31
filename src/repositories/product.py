@@ -152,6 +152,49 @@ class ProductAdapter:
                     )
         return variants
 
+    def _convert_price_range(self, price_range):
+        """Convert snake_case price_range from database to camelCase for schema."""
+        if not price_range:
+            return {
+                "maxVariantPrice": {"amount": "0.00", "currencyCode": "USD"},
+                "minVariantPrice": {"amount": "0.00", "currencyCode": "USD"},
+            }
+
+        # Convert snake_case to camelCase
+        converted = {}
+        if "min_variant_price" in price_range:
+            converted["minVariantPrice"] = self._convert_price_to_money_schema(price_range["min_variant_price"])
+        if "max_variant_price" in price_range:
+            converted["maxVariantPrice"] = self._convert_price_to_money_schema(price_range["max_variant_price"])
+
+        # If the price_range is already in camelCase (fallback)
+        if "minVariantPrice" in price_range:
+            converted["minVariantPrice"] = self._convert_price_to_money_schema(price_range["minVariantPrice"])
+        if "maxVariantPrice" in price_range:
+            converted["maxVariantPrice"] = self._convert_price_to_money_schema(price_range["maxVariantPrice"])
+
+        # Ensure we have both fields
+        if "minVariantPrice" not in converted:
+            converted["minVariantPrice"] = {"amount": "0.00", "currencyCode": "USD"}
+        if "maxVariantPrice" not in converted:
+            converted["maxVariantPrice"] = {"amount": "0.00", "currencyCode": "USD"}
+
+        return converted
+
+    def _convert_price_to_money_schema(self, price):
+        """Convert price to MoneySchema format."""
+        if isinstance(price, dict):
+            # If it's already a dict, ensure it has the right structure
+            if "amount" in price and "currencyCode" in price:
+                return price
+            if "amount" in price and "currency_code" in price:
+                return {"amount": str(price["amount"]), "currencyCode": price["currency_code"]}
+            return {"amount": "0.00", "currencyCode": "USD"}
+        if isinstance(price, (int, float, str)):
+            # If it's a simple value, wrap it in MoneySchema format
+            return {"amount": str(price), "currencyCode": "USD"}
+        return {"amount": "0.00", "currencyCode": "USD"}
+
     def _to_graphql_format(self, product: ProductModel, rating: float = 0.0) -> dict:
         # Извлекаем уникальные опции из вариантов
         options = self._extract_options_from_variants(product.variants)
@@ -167,11 +210,7 @@ class ProductAdapter:
                 {"id": f"option-{i + 1}", "name": name, "values": values}
                 for i, (name, values) in enumerate(options.items())
             ],
-            "priceRange": product.price_range
-            or {
-                "maxVariantPrice": {"amount": "0.00", "currencyCode": "USD"},
-                "minVariantPrice": {"amount": "0.00", "currencyCode": "USD"},
-            },
+            "priceRange": self._convert_price_range(product.price_range),
             "variants": {
                 "edges": [
                     {
@@ -179,7 +218,7 @@ class ProductAdapter:
                             "id": variant.get("id", f"variant-{i}"),
                             "availableForSale": variant.get("availableForSale", True),
                             "selectedOptions": variant.get("selectedOptions", []),
-                            "price": variant.get("price", {"amount": "0.00", "currencyCode": "USD"}),
+                            "price": self._convert_price_to_money_schema(variant.get("price", "0.00")),
                         }
                     }
                     for i, variant in enumerate(product.variants or [])

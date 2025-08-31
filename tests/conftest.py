@@ -1,31 +1,34 @@
-import pytest
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker, Session
-from fastapi.testclient import TestClient
-from src.main import app
-from src.models import ProductModel, CategoryModel, UserModel, ReviewModel, CartModel, CartProductModel
-from src.application.utils.token_services import TokenService
-from src.database import get_db
-from src.config import SETTINGS
-from src.application.routers.user import get_token_service
-from unittest.mock import Mock, patch
-#------------------------------------------------------------
-import os
+# ------------------------------------------------------------
 from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker
+
+from src.application.utils.token_services import TokenService
+from src.config import SETTINGS
+from src.database import get_db
+from src.main import app
+from src.models import CartModel, CartProductModel, CategoryModel, ProductModel, ReviewModel, UserModel
+from src.models.base import Base
 
 STATIC_DIR = Path("src/public/products")  # Путь до папки с изображениями
-STATIC_URL_PREFIX = "/products/"   # Как ты монтируешь статику в FastAPI
+STATIC_URL_PREFIX = "/products/"  # Как ты монтируешь статику в FastAPI
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
-from faker import Faker
 import random
-#--------------------
-import bcrypt
 
-#--------------------
+# --------------------
+import bcrypt
+from faker import Faker
+
+# --------------------
 # Инициализируем генератор случайных данных
+
 
 # Фикстура для тестового движка
 @pytest.fixture(scope="module")
@@ -34,10 +37,25 @@ def test_engine() -> Engine:
     engine = create_engine(test_db_url)
     return engine
 
+
+# Фикстура для создания таблиц в тестовой базе данных
+@pytest.fixture(scope="module", autouse=True)
+def create_test_tables(test_engine):
+    """Create all database tables before running tests.
+    This fixture runs automatically for the entire test module.
+    """
+    # Create all tables
+    Base.metadata.create_all(bind=test_engine)
+    yield
+    # Optionally drop tables after all tests are done
+    # Base.metadata.drop_all(bind=test_engine)
+
+
 # Фикстура для фабрики сессий
 @pytest.fixture(scope="module")
 def test_session_maker(test_engine):
     return sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
 
 # Фикстура для тестовой сессии
 @pytest.fixture(scope="function")
@@ -47,6 +65,7 @@ def test_session(test_session_maker):
         yield session
     finally:
         session.close()
+
 
 # # Фикстура для очистки таблиц после каждого теста
 # @pytest.fixture(autouse=True)
@@ -65,6 +84,7 @@ def test_session(test_session_maker):
 #             for table in reversed(metadata.sorted_tables):
 #                 connection.execute(table.delete())
 
+
 # Фикстура для тестового клиента
 @pytest.fixture(scope="function")
 def test_client(test_session):
@@ -78,6 +98,7 @@ def test_client(test_session):
     client = TestClient(app)
     return client
 
+
 # Фикстура для генерации 10 категорий
 @pytest.fixture(scope="function")
 def generate_categories(test_session):
@@ -90,7 +111,8 @@ def generate_categories(test_session):
     test_session.commit()  # Перенесено за цикл для оптимизации
     return categories
 
-#--------------------------------------------------------------
+
+# --------------------------------------------------------------
 # Фикстура для генерации n продуктов
 # Фикстура
 @pytest.fixture(scope="function")
@@ -107,57 +129,45 @@ def generate_products(generate_categories, test_session) -> list[ProductModel]:
 
         options = [
             {"id": "option-1", "name": "Size", "values": ["S", "M", "L", "XL"]},
-            {"id": "option-2", "name": "Color", "values": ["Red", "Blue", "Green"]}
+            {"id": "option-2", "name": "Color", "values": ["Red", "Blue", "Green"]},
         ]
 
         variants = []
         for size in options[0]["values"]:
             for color in options[1]["values"]:
-                variants.append({
-                    "id": f"variant-{size}-{color}",
-                    "availableForSale": True,
-                    "selectedOptions": [
-                        {"name": "Size", "value": size},
-                        {"name": "Color", "value": color}
-                    ],
-                    "price": {
-                        "amount": '50',
-                        "currencyCode": "USD"
+                variants.append(
+                    {
+                        "id": f"variant-{size}-{color}",
+                        "availableForSale": True,
+                        "selectedOptions": [{"name": "Size", "value": size}, {"name": "Color", "value": color}],
+                        "price": {"amount": "50", "currencyCode": "USD"},
                     }
-                })
+                )
 
         # Выбор случайного локального изображения
         image_path = fake.random.choice(image_files)
         image_url = f"{STATIC_URL_PREFIX}{image_path.name}"
 
-        featured_image = {
-            "url": image_url,
-            "altText": "Product Image",
-            "width": 640,
-            "height": 480
-        }
+        featured_image = {"url": image_url, "altText": "Product Image", "width": 640, "height": 480}
         images = [featured_image]
 
         product = ProductModel(
             title=fake.unique.word(),
-            description=fake.sentence(nb_words=10) + ' some',
+            description=fake.sentence(nb_words=10) + " some",
             description_html=f"<p>{fake.sentence(nb_words=10)}</p>",
             handle=fake.unique.word().lower(),
             options=options,
             variants=variants,
             price_range={
                 "minVariantPrice": {"amount": "50.00", "currencyCode": "USD"},
-                "maxVariantPrice": {"amount": "500.00", "currencyCode": "USD"}
+                "maxVariantPrice": {"amount": "500.00", "currencyCode": "USD"},
             },
             featured_image=featured_image,
             images=images,
             available_for_sale=True,
-            seo={
-                "title": fake.word(),
-                "description": fake.sentence(nb_words=10)
-            },
+            seo={"title": fake.word(), "description": fake.sentence(nb_words=10)},
             tags=["fashion", "clothing", "summer"],
-            category_id=category.id
+            category_id=category.id,
         )
 
         test_session.add(product)
@@ -173,13 +183,13 @@ def generate_products(generate_categories, test_session) -> list[ProductModel]:
 #     products = []
 #     for _ in range(10):
 #         category = fake.random.choice(generate_categories)
-        
+
 #         # Создание options
 #         options = [
 #             {"id": "option-1", "name": "Size", "values": ["S", "M", "L", "XL"]},
 #             {"id": "option-2", "name": "Color", "values": ["Red", "Blue", "Green"]}
 #         ]
-        
+
 #         # Создание вариантов
 #         variants = []
 #         for size in options[0]["values"]:
@@ -196,7 +206,7 @@ def generate_products(generate_categories, test_session) -> list[ProductModel]:
 #                         "currencyCode": "USD"
 #                     }
 #                 })
-        
+
 #         # Создание изображения
 #         image_url = fake.image_url(width=640, height=480)
 #         featured_image = {
@@ -206,7 +216,7 @@ def generate_products(generate_categories, test_session) -> list[ProductModel]:
 #             "height": 480
 #         }
 #         images = [{"url": image_url, "altText": "Product Image", "width": 640, "height": 480}]
-        
+
 #         product = ProductModel(
 #             title=fake.unique.word(),
 #             description=fake.sentence(nb_words=10),
@@ -228,12 +238,13 @@ def generate_products(generate_categories, test_session) -> list[ProductModel]:
 #             tags=["fashion", "clothing", "summer"],
 #             category_id=category.id
 #         )
-        
+
 #         test_session.add(product)
 #         products.append(product)
 #     test_session.commit()
 #     return products
-#--------------------------------------------------------------
+# --------------------------------------------------------------
+
 
 # Фикстура для создания n пользователей
 @pytest.fixture(scope="function")
@@ -242,33 +253,35 @@ def generate_user(test_session):
     users = []
     for _ in range(10):
         # Хешируем пароль перед сохранением в базу данных
-        hashed_password = bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(b"password123", bcrypt.gensalt())
         user = UserModel(
             name=fake.unique.word(),
             email=fake.email(),
-            password=hashed_password  # Сохраняем хешированный пароль
+            password=hashed_password,  # Сохраняем хешированный пароль
         )
         test_session.add(user)
         users.append(user)
     test_session.commit()
     return users
 
+
 # Фикстура для TokenService
 @pytest.fixture
 def token_service():
     return TokenService(secret_key="my_secret_key")
+
 
 # Фикстура для создания 1 пользователя
 @pytest.fixture(scope="function")
 def test_user(test_session):
     fake = Faker()
     # Хешируем пароль перед сохранением в базу данных
-    hashed_password = bcrypt.hashpw("password123".encode('utf-8'), bcrypt.gensalt())
+    hashed_password = bcrypt.hashpw(b"password123", bcrypt.gensalt())
     user = UserModel(
-            name=fake.unique.word(),
-            email=fake.email(),
-            password=hashed_password.decode('utf-8')  # Сохраняем хешированный пароль
-        )
+        name=fake.unique.word(),
+        email=fake.email(),
+        password=hashed_password.decode("utf-8"),  # Сохраняем хешированный пароль
+    )
     test_session.add(user)
     test_session.commit()
     return user
@@ -286,10 +299,11 @@ def mock_token_service(test_user):
     app.dependency_overrides[get_token_service] = get_mock_token_service
 
     # Возвращаем клиента
-    yield 
+    yield
 
     # Очищаем переопределения после завершения теста
     app.dependency_overrides.clear()
+
 
 # Фикстура для создания корзины
 @pytest.fixture
@@ -299,6 +313,7 @@ def test_cart(test_user, test_session) -> CartModel:
     test_session.commit()
     return cart
 
+
 # Фикстура для добавления товара в корзину
 @pytest.fixture
 def product_to_cart(test_cart, test_session, generate_products) -> CartProductModel:
@@ -306,6 +321,7 @@ def product_to_cart(test_cart, test_session, generate_products) -> CartProductMo
     test_session.add(cart_product)
     test_session.commit()
     return cart_product
+
 
 # Фикстура для добавления отзыва
 @pytest.fixture
@@ -322,7 +338,7 @@ def test_multiple_reviews(generate_products, generate_user, test_session) -> lis
     product = generate_products[0]
     reviews = []
     for user in generate_user:
-        review = ReviewModel(product_id=product.id, user_id=user.id, rating=random.randint(1,5))
+        review = ReviewModel(product_id=product.id, user_id=user.id, rating=random.randint(1, 5))
         test_session.add(review)
         reviews.append(review)
     test_session.commit()

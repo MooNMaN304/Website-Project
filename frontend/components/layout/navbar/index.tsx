@@ -5,8 +5,7 @@ import { Suspense } from 'react';
 import MobileMenu from './mobile-menu';
 import Search, { SearchSkeleton } from './search';
 import LoginButton from '../../LoginButton ';
-
-const { SITE_NAME } = process.env;
+import { SITE_NAME } from 'lib/constants';
 
 type MenuItem = {
   title: string;
@@ -14,9 +13,9 @@ type MenuItem = {
 };
 
 const menu: MenuItem[] = [
-  { title: 'Каталог', path: '/catalog' },
   { title: 'О нас', path: '/about' },
-  { title: 'Контакты', path: '/contact' }
+  { title: 'Контакты', path: '/contact' },
+  { title: 'Заказы', path: '/orders' }
 ];
 
 export function Navbar() {

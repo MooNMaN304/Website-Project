@@ -1,7 +1,7 @@
 'use client';
 
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import type { CartItem } from 'lib/shopify/types';
+import type { CartItem } from 'lib/types';
 import { useState } from 'react';
 
 export function DeleteItemButton({
@@ -17,12 +17,12 @@ export function DeleteItemButton({
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (isDeleting) {
       console.log('Delete operation already in progress');
       return;
     }
-    
+
     setIsDeleting(true);
     try {
       await optimisticUpdate(merchandiseId, 'delete');

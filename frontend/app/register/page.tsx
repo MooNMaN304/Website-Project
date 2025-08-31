@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from 'components/auth/auth-context';
 import { useRouter } from 'next/navigation';
+import type { components } from 'lib/api/types';
 import { getClientApiUrl } from '../../lib/config';
 
 const API_BASE_URL = getClientApiUrl();

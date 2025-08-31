@@ -315,7 +315,22 @@ export async function updateCart(
               const response = await updateCartItem(token, productId, quantity, variantId);
               // Обновляем локальный кэш корзины на основе ответа от сервера
               if (response && response.items) {
-                cart.lines = response.items;
+                // Transform API response to frontend CartItem format
+                cart.lines = response.items.map((item: any) => ({
+                  id: item.id,
+                  quantity: item.quantity,
+                  cost: item.cost,
+                  merchandise: {
+                    ...item.merchandise,
+                    product: {
+                      ...item.merchandise.product,
+                      featuredImage: item.merchandise.product.featuredImage || {
+                        url: '',
+                        altText: ''
+                      }
+                    }
+                  }
+                }));
                 const totals = updateCartTotals(cart.lines);
                 cart.totalQuantity = totals.totalQuantity;
                 cart.cost = totals.cost;
