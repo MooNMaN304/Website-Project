@@ -12,3 +12,5 @@ wheels/
 
 .vercel
 .env*.local
+logs/app.log
+tests/.DS_Store
