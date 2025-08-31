@@ -1,22 +1,72 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Grid from 'components/grid';
 import ProductGridItems from 'components/layout/product-grid-items';
 import { defaultSort, sorting } from 'lib/constants';
-import { getProducts } from 'lib/shopify';
+import { fetchProducts } from 'lib/api/products';
+import { Product } from 'lib/shopify/types';
 
-export const metadata = {
-  title: 'Search',
-  description: 'Search for products in the store.'
-};
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const sort = searchParams.get('sort') || '';
+  const searchValue = searchParams.get('q') || '';
 
-export default async function SearchPage(props: {
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const searchParams = await props.searchParams;
-  const { sort, q: searchValue } = searchParams as { [key: string]: string };
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
 
-  const products = await getProducts({ sortKey, reverse, query: searchValue });
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const fetchedProducts = await fetchProducts({
+          query: searchValue || undefined,
+          sortKey,
+          reverse
+        });
+
+        setProducts(fetchedProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch products');
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, [searchValue, sortKey, reverse]);
+
   const resultsText = products.length > 1 ? 'results' : 'result';
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="text-lg">Loading products...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center py-8">
+        <p>Error: {error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>

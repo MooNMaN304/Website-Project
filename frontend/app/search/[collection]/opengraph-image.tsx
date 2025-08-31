@@ -1,13 +1,8 @@
-import OpengraphImage from 'components/opengraph-image';
-import { getCollection } from 'lib/shopify';
-
-export default async function Image({
+export default function Image({
   params
 }: {
   params: { collection: string };
 }) {
-  const collection = await getCollection(params.collection);
-  const title = collection?.seo?.title || collection?.title;
-
-  return await OpengraphImage({ title });
+  // Disabled SSR - return empty image
+  return new Response(null, { status: 204 });
 }

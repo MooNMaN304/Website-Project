@@ -120,7 +120,7 @@ export default function OrderDetailPage() {
               Order #{order.id}
             </h1>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Placed on {formatDate(order.created_at)}
+              Placed on {order.created_at ? formatDate(order.created_at) : 'Unknown date'}
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -165,10 +165,17 @@ export default function OrderDetailPage() {
             <div>
               <h3 className="text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">Shipping Address</h3>
               <div className="text-gray-700 dark:text-gray-200">
-                <p>{order.shipping_address.first_name} {order.shipping_address.last_name}</p>
-                <p>{order.shipping_address.address}</p>
-                <p>{order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.zip_code}</p>
-                <p>{order.shipping_address.country}</p>
+                {(() => {
+                  const address = order.shipping_address as any;
+                  return (
+                    <>
+                      <p>{address.first_name} {address.last_name}</p>
+                      <p>{address.address}</p>
+                      <p>{address.city}, {address.state} {address.zip_code}</p>
+                      <p>{address.country}</p>
+                    </>
+                  );
+                })()}
               </div>
             </div>
             <div>
@@ -230,7 +237,7 @@ export default function OrderDetailPage() {
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-900 dark:text-white">Order Placed</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {formatDate(order.created_at)}
+                {order.created_at ? formatDate(order.created_at) : 'Unknown date'}
               </p>
             </div>
           </div>

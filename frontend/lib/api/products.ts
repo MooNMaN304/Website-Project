@@ -2,9 +2,17 @@
  * Client-side API utilities for fetching data from the browser
  */
 import { getClientApiUrl } from 'lib/config';
-import { Product } from 'lib/api/types';
-import { mapBackendProductsToFrontend, mapBackendProductToFrontend } from 'lib/mappers/product';
-import type { components } from '../../src/types/api';
+import { Product } from 'lib/shopify/types';
+import { mapSimpleBackendProductsToFrontend, mapBackendProductToFrontend } from 'lib/mappers/product';
+
+// Simple backend product type that matches actual API response
+interface SimpleBackendProduct {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  image_url?: string;
+}
 
 export interface GetProductsParams {
   query?: string;
@@ -24,7 +32,9 @@ export interface GetCollectionProductsParams {
 export async function fetchProducts(params: GetProductsParams = {}): Promise<Product[]> {
   const { query, reverse, sortKey } = params;
 
-  const url = new URL(`${getClientApiUrl()}/api/products`);
+  const baseUrl = getClientApiUrl();
+  const urlString = baseUrl ? `${baseUrl}/api/products` : '/api/products';
+  const url = new URL(urlString, baseUrl || window.location.origin);
   if (query) url.searchParams.append('query', query);
   if (sortKey) url.searchParams.append('sortKey', sortKey);
   if (reverse !== undefined) url.searchParams.append('reverse', String(reverse));
@@ -36,10 +46,10 @@ export async function fetchProducts(params: GetProductsParams = {}): Promise<Pro
   }
 
   const data = await response.json();
-  const products: components['schemas']['ProductResponseSchema'][] = data.products || [];
+  const products: SimpleBackendProduct[] = data.products || [];
 
-  // Convert backend response to frontend format using type-safe mapper
-  return mapBackendProductsToFrontend(products);
+  // Convert backend response to frontend format using simple mapper
+  return mapSimpleBackendProductsToFrontend(products);
 }
 
 /**
@@ -77,7 +87,9 @@ export async function fetchCollectionProducts(params: GetCollectionProductsParam
   }
 
   try {
-    const url = new URL(`${getClientApiUrl()}/api/category/${categoryId}`);
+    const baseUrl = getClientApiUrl();
+    const urlString = baseUrl ? `${baseUrl}/api/category/${categoryId}` : `/api/category/${categoryId}`;
+    const url = new URL(urlString, baseUrl || window.location.origin);
     if (sortKey) url.searchParams.append('sortKey', sortKey);
     if (reverse !== undefined) url.searchParams.append('reverse', String(reverse));
 
@@ -91,10 +103,10 @@ export async function fetchCollectionProducts(params: GetCollectionProductsParam
     }
 
     const data = await response.json();
-    const products: components['schemas']['ProductResponseSchema'][] = data.products || [];
+    const products: SimpleBackendProduct[] = data.products || [];
 
-    // Convert backend response to frontend format using type-safe mapper
-    return mapBackendProductsToFrontend(products);
+    // Convert backend response to frontend format using simple mapper
+    return mapSimpleBackendProductsToFrontend(products);
   } catch (error) {
     console.error('Error fetching collection products:', error);
     // Fallback to all products
@@ -117,9 +129,10 @@ export async function fetchProduct(id: string): Promise<Product | null> {
       throw new Error(`Failed to fetch product: ${response.statusText}`);
     }
 
-    const product: components['schemas']['ProductResponseSchema'] = await response.json();
+    const product = await response.json();
 
-    // Convert backend response to frontend format using type-safe mapper
+    // Convert backend response to frontend format using the appropriate mapper
+    // The API returns Shopify-formatted data, not SimpleBackendProduct
     return mapBackendProductToFrontend(product);
   } catch (error) {
     console.error('Error fetching product:', error);

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import type { components } from 'lib/api/types';
 import { getServerApiUrl } from '../../lib/config';
 
 const API_BASE_URL = getServerApiUrl();
@@ -117,16 +118,15 @@ export async function processCheckout(prevState: any, formData: FormData): Promi
       });
 
       if (!orderResponse.ok) {
-        const errorData = await orderResponse.json().catch(() => null);
-        console.error('Order creation failed:', errorData);
-        return `Error: ${errorData?.detail || errorData?.message || 'Failed to process order'}`;
+        const errorData: components['schemas']['HTTPValidationError'] = await orderResponse.json();
+        throw new Error(errorData.detail?.[0]?.msg || 'Order creation failed');
       }
 
-      const orderData = await orderResponse.json();
-      console.log('Order processed successfully:', orderData);
+      const orderResult: components['schemas']['OrderSchema'] = await orderResponse.json();
+      console.log('Order processed successfully:', orderResult);
 
       // Redirect to success page with the order ID from backend
-      redirect(`/checkout/success?orderId=${orderData.id || orderData.order_id}`);
+      redirect(`/checkout/success?orderId=${orderResult.id || orderResult.order_id}`);
 
     } catch (apiError) {
       console.error('API call failed:', apiError);

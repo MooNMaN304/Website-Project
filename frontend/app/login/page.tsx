@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from 'components/auth/auth-context';
+import type { components } from 'lib/api/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -66,23 +67,17 @@ export default function LoginPage() {
           }),
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
-          if (data.detail) {
-            setErrors({ form: data.detail });
-          } else if (typeof data === 'object') {
-            // Handle validation errors from backend
-            const serverErrors: Record<string, string> = {};
-            Object.entries(data).forEach(([key, value]) => {
-              serverErrors[key] = Array.isArray(value) ? value[0] : value as string;
-            });
-            setErrors(serverErrors);
+          const errorData: components['schemas']['HTTPValidationError'] = await response.json();
+          if (errorData.detail && errorData.detail.length > 0) {
+            setErrors({ form: errorData.detail[0]?.msg || 'Login failed' });
           } else {
-            setErrors({ form: 'Invalid credentials' });
+            setErrors({ form: 'Login failed' });
           }
           return;
         }
+
+        const data: components['schemas']['UserInit'] = await response.json();
 
         // Используем Promise.resolve для гарантии выполнения login перед переходом
         await Promise.resolve(login(data.token));

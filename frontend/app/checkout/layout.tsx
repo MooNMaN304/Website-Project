@@ -1,9 +1,4 @@
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Checkout',
-  description: 'Complete your purchase securely.',
-};
+'use client';
 
 export default function CheckoutLayout({
   children,

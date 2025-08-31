@@ -1,31 +1,47 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import Prose from 'components/prose';
 import { getPage } from 'lib/shopify';
-import { notFound } from 'next/navigation';
+import type { Page as PageType } from 'lib/types';
 
-export async function generateMetadata(props: {
-  params: Promise<{ page: string }>;
-}): Promise<Metadata> {
-  const params = await props.params;
-  const page = await getPage(params.page);
+export default function Page() {
+  const params = useParams();
+  const [page, setPage] = useState<PageType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  if (!page) return notFound();
+  useEffect(() => {
+    const fetchPage = async () => {
+      try {
+        setLoading(true);
+        const pageData = await getPage(params.page as string);
+        if (pageData) {
+          setPage(pageData);
+          setError(false);
+        } else {
+          setPage(null);
+          setError(true);
+        }
+      } catch (err) {
+        console.error('Failed to fetch page:', err);
+        setPage(null);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  return {
-    title: page.seo?.title || page.title,
-    description: page.seo?.description || page.bodySummary,
-    openGraph: {
-      publishedTime: page.createdAt,
-      modifiedTime: page.updatedAt,
-      type: 'article'
+    if (params.page) {
+      fetchPage();
     }
-  };
-}
+  }, [params.page]);
 
-export default async function Page(props: { params: Promise<{ page: string }> }) {
-  const params = await props.params;
-  const page = await getPage(params.page);
+  if (loading) return <div className="flex justify-center py-8">Loading page...</div>;
+  if (error || !page) return <div className="flex justify-center py-8">Page not found</div>;
 
   if (!page) return notFound();
 

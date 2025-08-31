@@ -1,5 +1,4 @@
-import OpengraphImage from 'components/opengraph-image';
-
-export default async function Image() {
-  return await OpengraphImage();
+export default function Image() {
+  // Disabled SSR - return empty image
+  return new Response(null, { status: 204 });
 }

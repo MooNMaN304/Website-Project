@@ -1,4 +1,5 @@
 import { getClientApiUrl } from '../config';
+import type { components } from './types';
 
 const API_BASE_URL = getClientApiUrl();
 
@@ -9,7 +10,7 @@ function createRequestKey(method: string, path: string): string {
   return `${method}:${path}`;
 }
 
-async function makeRequest(url: string, options: RequestInit) {
+async function makeRequest<T = any>(url: string, options: RequestInit): Promise<T> {
   const requestKey = createRequestKey(options.method || 'GET', url);
 
   // Если уже есть такой запрос в процессе, возвращаем его результат
@@ -46,8 +47,8 @@ async function makeRequest(url: string, options: RequestInit) {
   return requestPromise;
 }
 
-export async function getCart(token: string) {
-  return makeRequest(`${API_BASE_URL}/api/users/carts/`, {
+export async function getCart(token: string): Promise<components['schemas']['CartResponseSchema']> {
+  return makeRequest<components['schemas']['CartResponseSchema']>(`${API_BASE_URL}/api/users/carts/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -60,7 +61,7 @@ export async function updateCartItem(
   productId: string,
   quantity: number,
   variantId?: string
-) {
+): Promise<components['schemas']['CartResponseSchema']> {
   try {
     if (quantity <= 0 || quantity > 100) {
       throw new Error('Invalid quantity: must be between 1 and 100');
@@ -77,7 +78,7 @@ export async function updateCartItem(
       url.searchParams.append('variant_id', variantId);
     }
 
-    return makeRequest(url.toString(), {
+    return makeRequest<components['schemas']['CartResponseSchema']>(url.toString(), {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -94,7 +95,7 @@ export async function removeCartItem(
   token: string,
   productId: string,
   variantId?: string
-) {
+): Promise<components['schemas']['CartUpdateResponseSchema']> {
   try {
     const numericProductId = Number(productId);
     if (isNaN(numericProductId)) {
@@ -106,7 +107,7 @@ export async function removeCartItem(
       url.searchParams.append('variant_id', variantId);
     }
 
-    return makeRequest(url.toString(), {
+    return makeRequest<components['schemas']['CartUpdateResponseSchema']>(url.toString(), {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,

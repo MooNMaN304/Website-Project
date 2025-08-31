@@ -4,6 +4,7 @@ import { useOrders } from 'components/orders/order-context';
 import Link from 'next/link';
 import Price from 'components/price';
 import LoadingDots from 'components/loading-dots';
+import { OrderResponse } from 'lib/api/orders';
 
 export default function OrdersPage() {
   const { orders, isLoading, error, refreshOrders } = useOrders();
@@ -72,7 +73,9 @@ export default function OrdersPage() {
   );
 }
 
-function OrderCard({ order }: { order: any }) {
+// Remove duplicate import
+
+function OrderCard({ order }: { order: OrderResponse }) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -85,6 +88,8 @@ function OrderCard({ order }: { order: any }) {
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       case 'cancelled':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      case 'completed':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
@@ -116,12 +121,11 @@ function OrderCard({ order }: { order: any }) {
             {order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Pending'}
           </span>
           <div className="text-right">
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
-              ${(order.total_amount || 0).toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {order.currency_code || 'USD'}
-            </p>
+            <Price
+              amount={(order.total_amount || 0).toString()}
+              currencyCode={order.currency_code || 'USD'}
+              className="text-lg font-medium text-gray-900 dark:text-white"
+            />
           </div>
         </div>
       </div>
@@ -134,10 +138,17 @@ function OrderCard({ order }: { order: any }) {
             </h4>
             {order.shipping_address ? (
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {order.shipping_address.first_name} {order.shipping_address.last_name}<br />
-                {order.shipping_address.address}<br />
-                {order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.zip_code}<br />
-                {order.shipping_address.country}
+                {(() => {
+                  const address = order.shipping_address as any;
+                  return (
+                    <>
+                      <span>{address.first_name} {address.last_name}</span><br />
+                      <span>{address.address}</span><br />
+                      <span>{address.city}, {address.state} {address.zip_code}</span><br />
+                      <span>{address.country}</span>
+                    </>
+                  );
+                })()}
               </p>
             ) : (
               <p className="text-sm text-gray-500 dark:text-gray-400 italic">
@@ -166,9 +177,11 @@ function OrderCard({ order }: { order: any }) {
                   <span className="text-gray-600 dark:text-gray-400">
                     {item.quantity || 1}x {item.name || item.title || 'Unknown Item'}
                   </span>
-                  <span className="text-gray-900 dark:text-white">
-                    ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
-                  </span>
+                  <Price
+                    amount={((item.price || 0) * (item.quantity || 1)).toString()}
+                    currencyCode={order.currency_code || 'USD'}
+                    className="text-gray-900 dark:text-white"
+                  />
                 </div>
               ))}
               {order.items.length > 3 && (

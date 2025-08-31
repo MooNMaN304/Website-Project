@@ -3,6 +3,7 @@
  */
 
 import { getClientApiUrl } from '../config';
+import type { components } from './types';
 
 export interface OrderRequest {
   email: string;
@@ -24,26 +25,8 @@ export interface OrderRequest {
   } | null;
 }
 
-export interface OrderResponse {
-  id: string;
-  order_id?: string;
-  status: string;
-  total_amount: number;
-  currency_code: string;
-  created_at: string;
-  email: string;
-  shipping_address: {
-    first_name: string;
-    last_name: string;
-    address: string;
-    city: string;
-    state: string;
-    zip_code: string;
-    country: string;
-  } | null;
-  payment_method: string | null;
-  items: any[];
-}
+// Use the generated OrderSchema from the API types instead of custom OrderResponse
+export type OrderResponse = components['schemas']['OrderSchema'];
 
 export interface ApiError {
   detail?: string;
@@ -70,7 +53,7 @@ function getAuthToken(): string | null {
 /**
  * Create a new order
  */
-export async function createOrder(orderData: OrderRequest): Promise<OrderResponse> {
+export async function createOrder(orderData: OrderRequest): Promise<components['schemas']['OrderSchema']> {
   const authToken = getAuthToken();
 
   if (!authToken) {
@@ -90,15 +73,9 @@ export async function createOrder(orderData: OrderRequest): Promise<OrderRespons
     let errorMessage = 'Failed to create order';
 
     try {
-      const errorData: ApiError = await response.json();
-      errorMessage = errorData.detail || errorData.message || errorMessage;
-
-      // Handle validation errors
-      if (errorData.errors) {
-        const firstError = Object.values(errorData.errors)[0];
-        if (firstError && Array.isArray(firstError) && firstError.length > 0) {
-          errorMessage = firstError[0] || errorMessage;
-        }
+      const errorData: components['schemas']['HTTPValidationError'] = await response.json();
+      if (errorData.detail && errorData.detail.length > 0) {
+        errorMessage = errorData.detail[0]?.msg || errorMessage;
       }
     } catch (e) {
       // If JSON parsing fails, use status text
@@ -114,7 +91,7 @@ export async function createOrder(orderData: OrderRequest): Promise<OrderRespons
 /**
  * Get order by ID
  */
-export async function getOrder(orderId: string): Promise<OrderResponse> {
+export async function getOrder(orderId: string): Promise<components['schemas']['OrderSchema']> {
   const authToken = getAuthToken();
 
   if (!authToken) {
@@ -138,7 +115,7 @@ export async function getOrder(orderId: string): Promise<OrderResponse> {
 /**
  * Get user's order history
  */
-export async function getUserOrders(): Promise<OrderResponse[]> {
+export async function getUserOrders(): Promise<components['schemas']['OrderSchema'][]> {
   const authToken = getAuthToken();
 
   if (!authToken) {
@@ -162,7 +139,7 @@ export async function getUserOrders(): Promise<OrderResponse[]> {
 /**
  * Cancel an order
  */
-export async function cancelOrder(orderId: string): Promise<OrderResponse> {
+export async function cancelOrder(orderId: string): Promise<components['schemas']['OrderSchema']> {
   const authToken = getAuthToken();
 
   if (!authToken) {
