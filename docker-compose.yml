@@ -2,17 +2,27 @@
 services:
   traefik:
     image: traefik:v3.0
+    env_file:
+      - .env.production
     command:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
-      - --log.level=INFO
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --log.level=${TRAEFIK_LOG_LEVEL:-INFO}
       - --accesslog=true
-      - --entryPoints.web.transport.respondingTimeouts.readTimeout=10s
+      - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=10s
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
     networks:
       - traefik-prod
     restart: always
@@ -48,9 +58,10 @@ services:
       start_period: 40s
     labels:
       - traefik.enable=true
-      - traefik.http.routers.app.rule=PathPrefix(`/api`)
-      - traefik.http.routers.app.entrypoints=web
+      - traefik.http.routers.app.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api`)
+      - traefik.http.routers.app.entrypoints=websecure
       - traefik.http.routers.app.priority=100
+      - traefik.http.routers.app.tls.certresolver=myresolver
       - traefik.http.services.app.loadbalancer.server.port=8000
     networks:
       - traefik-prod
@@ -109,9 +120,10 @@ services:
       start_period: 40s
     labels:
       - traefik.enable=true
-      - traefik.http.routers.web.rule=PathPrefix(`/`) && !PathPrefix(`/api`)
-      - traefik.http.routers.web.entrypoints=web
+      - traefik.http.routers.web.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/`) && !PathPrefix(`/api`)
+      - traefik.http.routers.web.entrypoints=websecure
       - traefik.http.routers.web.priority=10
+      - traefik.http.routers.web.tls.certresolver=myresolver
       - traefik.http.services.web.loadbalancer.server.port=3000
     networks:
       - traefik-prod
@@ -125,6 +137,7 @@ volumes:
   postgres_data_prod:
   node_modules_cache_prod:
   nextjs_cache_prod:
+  letsencrypt:
 
 networks:
   traefik-prod:
